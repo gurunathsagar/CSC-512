@@ -70,6 +70,7 @@ public class Scanner{
 		return c;
 	}
 
+	/* Checking if the token is a hash Define */
 	public boolean checkMetaStatement(char c){
 
 		if(c == '#'){
@@ -88,8 +89,8 @@ public class Scanner{
 	}
 
 	public boolean checkString(char c){
-
-		if(c == '"'){
+if
+		(c == '"'){
 			
 			this.latestToken.tokenName  += Character.toString(c);
 
@@ -371,7 +372,7 @@ public class Scanner{
 
 	public static void main(String[] args){
 		try{
-			Scanner sc = new Scanner("file.c");
+			Scanner sc = new Scanner(args[0]);
 			
 			while(sc.hasMoreTokens()){
 				
@@ -381,7 +382,7 @@ public class Scanner{
         		else 
                		sc.destStream.print(sc.getNextToken().getTokenName() + " "); 				
 			}
-			System.out.println();
+			sc.destStream.println();
 		}
 		catch (FileNotFoundException f){
 
