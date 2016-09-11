@@ -1,0 +1,38 @@
+How to Compile:
+
+%javac Scanner.java
+Name: Gurunath Ashok Hanamsagar
+Unity ID: ghanams
+No.: 200109966
+
+
+This will produce the object file for this project to be executed.
+
+How to Execute:
+
+%java Scanner file_name.c
+
+This will execute the file with file_name.c as the file. The file name must be in the format of <string>.c
+
+Basic Functionality:
+
+The code has a class Scanner. When the program is executed, an object of scanner is made at first which takes in filename as a parameter. This filename is constant throughout the execution of the program and hence it a stream reader is created and kept for use. Also, the new output file is generated and a stream for that is also created. 
+
+**************************************************
+
+Other important Variables of the class: 
+
+latestToken. This contains the latest token which has not been written to the file_gen.c yet. This will be used by the function getNextToken. 
+remainingBuffer. This comprises of any extra characters read from the file during the matching of any token. E.g., we always try to match >= but in case we find >a, in that a will be kept in remainingBuffer.
+
+TokenType : This enum comprises all the possible token types.
+
+Token Class : This is used to denote a particular token. It has 2 parameters: tokenType and a tokenName. 
+
+Functionality:
+
+The main creates a scanner object and checks if there are more tokens in the file that is being read. If there are none, no more execution takes place. If more tokens exist, they are read from the startNewToken() function. 
+
+The startNewToken() is used to read the new token from the file. The file is read character by character and it is evaluated that what kind of token it is by using functions like checkString(), checkReserved(), checkNumber() etc. And accordingly the tokenType for the token is set. The process of returning the token does not depend on the type of token. 
+
+If the token type is an Identifier and is isn't the main, it is not prefixed with the string 'csc512' else, it is written as it is. The whole new tokens are written into the file file_gen.c
