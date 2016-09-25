@@ -9,10 +9,11 @@
 				| void 
 				| binary 
 				| decimal 
+				
 <parameter list> --> empty 
 				| void 
 				| <non-empty list> 
-<non-empty list> --> <type name> ID 
+<non-empty list> --> <type name> ID 	
 				| <non-empty list> comma <type name> ID 
 <data decls> --> empty 
 				| <type name> <id list> semicolon <data decls> 
