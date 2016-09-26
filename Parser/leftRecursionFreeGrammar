@@ -99,8 +99,7 @@
 <statements z> --> empty
 				|  <statement> <statements z>
 
-<statement> --> <assignment> 
-			| <func call> 
+<statement> --> ID <statement z>
 			| <if statement> 
 			| <while statement> 
 			| <return statement> 
@@ -109,12 +108,22 @@
 			| read left_parenthesis  ID right_parenthesis semicolon 
 			| write left_parenthesis <expression> right_parenthesis semicolon 
 			| print left_parenthesis  STRING right_parenthesis semicolon 
-							 
+
+<statement z> --> left_bracket <expression> right_bracket equal_sign <expression> semicolon
+				| equal_sign <expression> semicolon
+				| left_parenthesis <statement z1>
+				
+<statement z1> --> right_parenthesis semicolon
+				 | <expr list> right_parenthesis semicolon						 
+
 <assignment> --> <id> equal_sign <expression> semicolon
 
-<func call> --> ID left_parenthesis <expr list> right_parenthesis semicolon
+<func call> --> ID left_parenthesis <func call z>
 
-<expr list> --> empty | <non-empty expr list>
+<func call z> --> right_parenthesis semicolon
+			    | <expr list> right_parenthesis semicolon
+
+<expr list> --> <non-empty expr list>
 
 <non-empty expr list> --> <expression> <non-empty expr list p>
 
@@ -125,19 +134,29 @@
 
 <if statement> --> if left_parenthesis <condition expression> right_parenthesis <block statements>
 
-<condition expression> -->  <condition> 
-						  | <condition> <condition op> <condition>
+<condition expression> -->  <condition> <condition expression z>
 
-<condition op> --> double_and_sign | double_or_sign
+<condition expression z> --> <condition op> <condition>
+							| empty
+
+<condition op> --> double_and_sign 
+				 | double_or_sign
 
 <condition> --> <expression> <comparison op> <expression> 
 
-<comparison op> --> == | != | > | >= | < | <=
+<comparison op> --> == 
+				  | != 
+				  | > 
+				  | >= 
+				  | < 
+				  | <=
 						  
 <while statement> --> while left_parenthesis <condition expression> right_parenthesis <block statements>
 
-<return statement> --> return <expression> semicolon 
-					 | return semicolon 
+<return statement> --> return <return statement z>
+
+<return statement z> --> <expression> semicolon 
+					 | semicolon 
 					 
 <break statement> ---> break semicolon 
 
@@ -161,25 +180,15 @@
 <mulop> --> star_sign 
 		  | forward_slash 
 
-<factor> --> ID 
-			| ID left_bracket <expression> right_bracket 
-			| ID left_parenthesis <expr list> right_parenthesis 
+<factor> --> ID <factor z>
 			| NUMBER 
 			| minus_sign NUMBER 
 			| left_parenthesis <expression> right_parenthesis
 				  
-						  
-						  
-						  
-						  
-						  
-						  
-						  
-						  
-						  
-						  
-						  
-						  
-						  
-						  
+<factor z> --> empty
+			| left_bracket <expression> right_bracket 
+			| left_parenthesis <factor z1>
+			
+<factor z1> --> right_parenthesis
+			  | <expr list> right_parenthesis
 						  
