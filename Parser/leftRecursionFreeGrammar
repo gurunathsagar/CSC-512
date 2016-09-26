@@ -1,19 +1,70 @@
-<program> --> <data decls> <func list> 
+//<program> --> empty
+			| <func list>
+			| <data decls> <func list> 
+			| <data decls>
 
-<func list> --> empty 
-				| <func> <func list>
+<program> --> empty
+			| <type name> ID <program z>
 
-<func> --> <func decl> semicolon 
-				| <func decl> left_brace <data decls> <statements> right_brace
+<program z> --> left_parenthesis <func decl z> <func z> <func list>
+			| comma <id> <id list p> semicolon <data decls> <program z1>
+			| semicolon <data decls> <program z1>
+			| left_bracket <expression> right_bracket <program z7>
 
-<func decl> --> <type name> ID left_parenthesis <parameter list> right_parenthesis
+<program z7> --> semicolon <data decls> <program z2>
+			| comma <id> <id list p> semicolon <data decls> <program z2>
+
+<program z1> --> <type name> ID left_parenthesis <func decl z> <func z> <func list>
+				| empty
+
+<program z2> --> <type name> ID left_parenthesis <func decl z> <func z> <func list>
+				| empty
+
+<func list> --> <func> <func list>
+
+<func> --> <func decl> <func z>
+
+<func z> --> semicolon 
+		| left_brace <func z6>
+
+<func z6> --> <data decls> <func z7>
+			| <statements> right_brace
+			| right_brace
+
+<func z7> --> <statements> right_brace
+			| right_brace
+
+//<func> --> <func decl> semicolon 
+		| <func decl> left_brace <data decls> <statements> right_brace
+
+<func decl> --> <type name> ID left_parenthesis <func decl z>
+
+<func decl z> --> right_parenthesis
+				| void <func decl z2>
+				| int ID <func decl z3>
+				| binary ID  <func decl z4>
+				| decimal ID <func decl z5>
+
+<func decl z2> --> right_parenthesis
+				 | ID <non-empty list p> right_parenthesis
+
+<func decl z3> --> comma <type name> ID <non-empty list> right_parenthesis
+				|  right_parenthesis
+
+<func decl z4> --> comma <type name> ID <non-empty list> right_parenthesis
+				|  right_parenthesis
+				
+<func decl z5> --> comma <type name> ID <non-empty list> right_parenthesis
+				|  right_parenthesis
+
+//<func decl> --> <type name> ID left_parenthesis <parameter list> right_parenthesis
 
 <type name> --> int 
 				| void 
 				| binary 
 				| decimal  
 				
-<parameter list> --> empty 
+//<parameter list> --> empty 
 				| void 
 				| <non-empty list>
 				
@@ -22,32 +73,42 @@
 <non-empty list p> --> comma <type name> ID <non-empty list>
 				| empty 
 
-<data decls> --> empty 
+<data decls> -->  <type name> <id list> semicolon
 				| <type name> <id list> semicolon <data decls>
 				
-<id list> --> <id> <id list p>
+<id list> --> <id> 
+			| <id> <id list p>
 
-<id list p> --> comma <id> <id list p>
-				| empty
+<id list p> --> comma <id>
+			  | comma <id> <id list p>
 
-<id> --> ID 
-		| ID left_bracket <expression> right_bracket								// Refactor
+<id> --> ID <id z>
+
+<id z> -> empty
+		| left_bracket <expression> right_bracket								// Refactor
 
 ***		
 
-<block statements> --> left_brace <statements> right_brace 
+<block statements> --> left_brace <block statements z>
+					
+<block statements z> --> <statements> right_brace
+						| right_brace
 
-<statements> --> empty | <statement> <statements> 
+<statements> --> <statement> <statements z>
 
-<statement> --> <assignment> | <func call> 
-							 | <if statement> 
-							 | <while statement> 
-							 | <return statement> 
-							 | <break statement> 
-							 | <continue statement> 
-							 | read left_parenthesis  ID right_parenthesis semicolon 
-							 | write left_parenthesis <expression> right_parenthesis semicolon 
-							 | print left_parenthesis  STRING right_parenthesis semicolon 
+<statements z> --> empty
+				|  <statement> <statements z>
+
+<statement> --> <assignment> 
+			| <func call> 
+			| <if statement> 
+			| <while statement> 
+			| <return statement> 
+			| <break statement> 
+			| <continue statement> 
+			| read left_parenthesis  ID right_parenthesis semicolon 
+			| write left_parenthesis <expression> right_parenthesis semicolon 
+			| print left_parenthesis  STRING right_parenthesis semicolon 
 							 
 <assignment> --> <id> equal_sign <expression> semicolon
 
