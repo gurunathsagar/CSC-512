@@ -1,0 +1,175 @@
+ program =   int, void, binary, decimal 
+ 
+
+ program z =  left_parenthesis, comma, semicolon, left_bracket  
+  
+
+ program z7 =  semicolon, comma 
+  
+
+ program z1 =  int, void, binary, decimal   
+ 
+
+ program z2 =  int, void, binary, decimal  
+ 
+
+ func list =  int, void, binary, decimal 
+ 
+
+ func =  int, void, binary, decimal 
+  
+
+ func z =  semicolon, left_brace 
+ 
+
+ func z6 =  ID, if, while, return, break, continue, read, write, print, int, void, binary, decimal, right_brace
+ 
+
+ func z7 =  ID, if, while, return, break, continue, read, write, print, rigth_brace 
+ 
+
+ func decl =  semicolon, left_brace 
+ 
+
+ func decl z =  right_paranthesis, void, int, binary, decimal 
+ 
+
+ func decl z2 =  right_paranthesis, ID 
+ 
+
+ func decl z6 =  right_paranthesis, comma 
+ 
+
+ func decl z3 =  comma, right_paranthesis 
+ 
+
+ func decl z4 =  comma, right_paranthesis 
+ 
+
+ func decl z5 =  comma, right_paranthesis 
+ 
+
+ type name =  int, void, binary, decimal 
+ 
+
+ non-empty list =  int, void, binary, decimal 
+ 
+
+ non-empty list z =    comma 
+ 
+
+ non-empty list p =  comma 
+
+
+ data decls =  int, void, binary, decimal 
+ 
+ 
+ data decls z =    int, void, binary, decimal 
+ 
+ 
+ id list =  ID 
+ 
+ 
+ id list z =    comma 
+ 
+
+ id list p =  comma 
+ 
+
+ id list p z =    ID 
+ 
+
+ id =  ID 
+ 
+
+ id z =    left_bracket 
+ 
+
+ block statements =  left_brace 
+
+
+ block statements z =  ID, if, while, return, break, continue, read, write, print 
+
+
+ statements =  ID, if, while, return, break, continue, read, write, print 
+ 
+
+ statements z =    ID, if, while, return, break, continue, read, write, print 
+ 
+
+ statement =  ID, if, while, return, break, continue, read, write, print 
+  
+
+ statement z =  left_bracket, equal_sign, left_parenthesis 
+ 
+
+ statement z1 =  right_paranthesis, ID 
+ 
+
+ expr list =  ID 
+ 
+
+ non-empty expr list =  ID 
+ 
+
+ non-empty expr list p =    comma 
+ 
+
+ if statement =  if 
+ 
+
+ condition expression =  ID 
+ 
+
+ condition expression z =    double_and_sign, double_or_sign 
+ 
+
+ condition op =  double_and_sign, double_or_sign 
+ 
+
+ condition =  ID 
+
+
+ comparison op =  ==, !=, , =, , = 
+ 
+
+ while statement =  while 
+ 
+
+ return statement =  return 
+ 
+
+ return statement z =  ID, semicolon 
+ 
+
+ break statement =  break 
+ 
+
+ continue statement =  continue 
+ 
+
+ expression =  ID 
+ 
+
+ expression p =  plus_sign, minus_sign  
+ 
+
+ addop =  plus_sign, minus_sign 
+ 
+
+ term =  ID 
+ 
+
+ term p =    star_sign, forward_slash 
+ 
+
+ mulop =  star_sign, forward_slash 
+ 
+
+ factor =  ID, NUMBER, minus_sign, left_parenthesis 
+  
+                    
+ factor z =    left_bracket, left_parenthesis 
+  
+
+ factor z1 =  right_paranthesis, ID 
