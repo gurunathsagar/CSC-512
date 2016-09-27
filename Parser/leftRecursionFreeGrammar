@@ -46,7 +46,10 @@
 				| decimal ID <func decl z5>
 
 <func decl z2> --> right_parenthesis
-				 | ID <non-empty list p> right_parenthesis
+				 | ID <func decl z6>
+				 
+<func decl z6> --> right_paranthesis
+				|  <non-empty list p> right paranthesis
 
 <func decl z3> --> comma <type name> ID <non-empty list> right_parenthesis
 				|  right_parenthesis
@@ -68,19 +71,27 @@
 				| void 
 				| <non-empty list>
 				
-<non-empty list> --> <type name> ID <non-empty list p>
+<non-empty list> --> <type name> ID <non-empty list z>
+
+<non-empty list z> --> empty
+				|  <non-empty list p>
 
 <non-empty list p> --> comma <type name> ID <non-empty list>
-				| empty 
 
-<data decls> -->  <type name> <id list> semicolon
-				| <type name> <id list> semicolon <data decls>
+<data decls> -->  <type name> <id list> semicolon <data decls z>
+
+<data decls z> --> empty 
+				| <type name> <id list> semicolon <data decls z>
 				
-<id list> --> <id> 
-			| <id> <id list p>
+<id list> --> <id> <id list z>
 
-<id list p> --> comma <id>
-			  | comma <id> <id list p>
+<id list z> --> empty
+			  | <id list p>
+
+<id list p> --> comma <id> <id list p z>
+
+<id list p z> --> empty 
+				| <id list p>
 
 <id> --> ID <id z>
 
@@ -116,11 +127,11 @@
 <statement z1> --> right_parenthesis semicolon
 				 | <expr list> right_parenthesis semicolon						 
 
-<assignment> --> <id> equal_sign <expression> semicolon
+//<assignment> --> <id> equal_sign <expression> semicolon
 
-<func call> --> ID left_parenthesis <func call z>
+//<func call> --> ID left_parenthesis <func call z>
 
-<func call z> --> right_parenthesis semicolon
+//<func call z> --> right_parenthesis semicolon
 			    | <expr list> right_parenthesis semicolon
 
 <expr list> --> <non-empty expr list>

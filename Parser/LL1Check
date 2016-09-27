@@ -1,0 +1,178 @@
+First(<program>) = {empty, int, void, binary, decimal }
+Follow(<program>) = { eof }
+
+First(<program z>) = { left_parenthesis, comma, semicolon, left_bracket } 
+Follow(<program z>) = { eof } 
+
+First(<program z7>) = { semicolon, comma }
+Follow(<program z7>) = { eof } 
+
+First(<program z1>) = { int, void, binary, decimal, empty } 
+Follow(<program z1>) = { $ }
+
+First(<program z2>) = { int, void, binary, decimal, empty }
+Follow(<program z2>) = { $ }
+
+First(<func list>) = { int, void, binary, decimal }
+Follow(<func list>) = { $ }
+
+First(<func>) = { int, void, binary, decimal }
+Follow(<func>) = { int, void, binary, decimal } 
+
+First(<func z>) = { semicolon, left_brace }
+Follow(<func z>) = { int, void, binary, decimal }
+
+First(<func z6>) = { ID, if, while, return, break, continue, read, write, print, int, void, binary, decimal, right_brace}
+Follow(<func z6>) = { int, void, binary, decimal }
+
+First(<func z7>) = { ID, if, while, return, break, continue, read, write, print, rigth_brace }
+Follow(<func z7>) = { int, void, binary, decimal }
+
+First(<func decl>) = { semicolon, left_brace }
+Follow(<func decl>) = { int, void, binary, decimal } U 
+
+First(<func decl z>) = { right_paranthesis, void, int, binary, decimal }
+Follow(<func decl z>) = { semicolon, left_brace } U { int, void, binary, decimal }
+
+First(<func decl z2>) = { right_paranthesis, ID }
+Follow(<func decl z2>) = { semicolon, left_brace } U { int, void, binary, decimal }
+
+First(<func decl z6>) = { right_paranthesis, comma }
+Follow(<func decl z6>) = { semicolon, left_brace } U { int, void, binary, decimal }
+
+First(<func decl z3>) = { comma, right_paranthesis }
+Follow(<func decl z3>) = { semicolon, left_brace } U { int, void, binary, decimal }
+
+First(<func decl z4>) = { comma, right_paranthesis }
+Follow(<func decl z4>) = { semicolon, left_brace } U { int, void, binary, decimal }
+
+First(<func decl z5>) = { comma, right_paranthesis }
+Follow(<func decl z5>) = { semicolon, left_brace } U { int, void, binary, decimal }
+
+First(<type name>) = { int, void, binary, decimal }
+Follow(<type name>) = { ID }
+
+First(<non-empty list>) = { int, void, binary, decimal }
+Follow(<non-empty list>) = { right_paranthesis  }
+
+First(<non-empty list z>) = { empty, comma }
+Follow(<non-empty list z>) = { right_paranthesis }
+
+First(<non-empty list p>) = { comma }
+Follow<non-empty list p>() = { right_paranthesis }
+
+First(<data decls>) = { int, void, binary, decimal }
+Follow(<data decls>) = { int, void, binary, decimal, empty } U { right_paranthesis, ID } U { semicolon, comma }
+                        U { eof } 
+
+First(<data decls z>) = { empty, int, void, binary, decimal }
+Follow(<data decls z>) = { int, void, binary, decimal, empty } U { right_paranthesis, ID } U { semicolon, comma }
+                        U { eof }
+
+First(<id list>) = { ID }
+Follow(<id list>) = { semicolon }
+
+First(<id list z>) = { empty, comma }
+Follow(<id list z>) = { semicolon }
+
+First(<id list p>) = { comma }
+Follow(<id list p>) = { semicolon }
+
+First(<id list p z>) = { empty, ID }
+Follow(<id list p z>) = { semicolon }
+
+First(<id>) = { ID }
+Follow(<id>) = { equal_sign, comma, empty, semicolon,  }
+
+First(<id z>) = { empty, left_bracket }
+Follow(<id z>) = { equal_sign, comma, empty, semicolon,  }
+
+First(<block statements>) = { left_brace }
+Follow(<block statements>) = follow(if) U follow(while)
+
+First(<block statements z>) = { ID, if, while, return, break, continue, read, write, print }
+Follow(<block statements z>) = follow(if) U follow(while)
+
+First(<statements>) = { ID, if, while, return, break, continue, read, write, print }
+Follow(<statements>) = { right_brace }
+
+First(<statements z>) = { empty, ID, if, while, return, break, continue, read, write, print }
+Follow(<statements z>) = { right_brace }
+
+First(<statement>) = { ID, if, while, return, break, continue, read, write, print }
+Follow(<statement>) = { empty, ID, if, while, return, break, continue, read, write, print } U { right_brace } 
+
+First(<statement z>) = { left_bracket, equal_sign, left_parenthesis }
+Follow(<statement z>) = { empty, ID, if, while, return, break, continue, read, write, print } U { right_brace }
+
+First(<statement z1>) = { right_paranthesis, ID }
+Follow(<statement z1>) = { empty, ID, if, while, return, break, continue, read, write, print } U { right_brace }
+
+First(<expr list>) = { ID }
+Follow(<expr list>) = { right_paranthesis}
+
+First(<non-empty expr list>) = { ID }
+Follow(<non-empty expr list>) = { right_paranthesis}
+
+First(<non-empty expr list p>) = { empty, comma }
+Follow(<non-empty expr list p>) = { right_paranthesis}
+
+First(<if statement>) = { if }
+Follow(<if statement>) = { empty, ID, if, while, return, break, continue, read, write, print } U { right_brace }
+
+First(<condition expression>) = { ID }
+Follow(<condition expression>) = { right_paranthesis }
+
+First(<condition expression z>) = { empty, double_and_sign, double_or_sign }
+Follow(<condition expression z>) = { right_paranthesis }
+
+First(<condition op>) = { double_and_sign, double_or_sign }
+Follow(<condition op>) = { double_and_sign, double_or_sign }
+
+First(<condition>) = { ID }
+Follow(<condition>) = { right_paranthesis } U 
+
+First(<comparison op>) = { ==, !=, >, >=, <, <= }
+Follow(<comparison op>) = { right_paranthesis }
+
+First(<while statement>) = { while }
+Follow(<while statement>) = { empty, ID, if, while, return, break, continue, read, write, print } U { right_brace }
+
+First(<return statement>) = { return }
+Follow(<return statement>) = { empty, ID, if, while, return, break, continue, read, write, print } U { right_brace }
+
+First(<return statement z>) = { ID, semicolon }
+Follow(<return statement z>) = { empty, ID, if, while, return, break, continue, read, write, print } U { right_brace }
+
+First(<break statement>) = { break }
+Follow(<break statement>) = { empty, ID, if, while, return, break, continue, read, write, print } U { right_brace }
+
+First(<continue statement>) = { continue }
+Follow(<continue statement>) = { empty, ID, if, while, return, break, continue, read, write, print } U { right_brace }
+
+First(<expression>) = { ID }
+Follow(<expression>) = { right_paranthesis }
+
+First(<expression p>) = { plus_sign, minus_sign, empty }
+Follow(<expression p>) = { right_paranthesis }
+
+First(<addop>) = { plus_sign, minus_sign }
+Follow(<addop>) = { ID }
+
+First(<term>) = { ID }
+Follow(<term>) = { plus_sign, minus_sign, empty } U { right_paranthesis }
+
+First(<term p>) = { empty, star_sign, forward_slash }
+Follow(<term p>) = { plus_sign, minus_sign, empty } U { right_paranthesis }
+
+First(<mulop>) = { star_sign, forward_slash }
+Follow(<mulop>) = { ID }
+
+First(<factor>) = { ID, NUMBER, minus_sign, left_parenthesis }
+Follow(<factor>) = { empty, star_sign, forward_slash } U { plus_sign, minus_sign, empty } U { right_paranthesis } 
+                    
+First(<factor z>) = { empty, left_bracket, left_parenthesis }
+Follow(<factor z>) = { empty, star_sign, forward_slash } U { plus_sign, minus_sign, empty } U { right_paranthesis } 
+
+First(<factor z1>) = { right_paranthesis, ID }
+Follow(<factor z1>) = { empty, star_sign, forward_slash } U { plus_sign, minus_sign, empty } U { right_paranthesis } 
