@@ -7,32 +7,36 @@ import java.io.*;
 ***/
 
 public class Parser{
-	Map<String,String[]> nonTerms = new HashMap<String, String[]>();
+	static Map<String,String[]> nonTerms = new HashMap<String, String[]>();
 	
-	public void createHash(String fileName){
+	public static void createHash(String fileName){
 		
 		try{
 			Scanner sc = new Scanner(new File(fileName));
 			while(sc.hasNext()){
 				
 				String str = sc.nextLine();
-				if(str.length <= 5)
+				if(str.length() <= 5)
 					continue;
-					
+				int i=0;
 				String[] sides = str.split("=");
 				sides[0].trim();
 				sides[1].trim();
 				String[] vals = sides[1].split(",");
-				System.out.println(sides[0]);
+				System.out.println("\n" + sides[0] + ":");
+				String[] list = new String[vals.length];
 				for(String s: vals){
-					nonTerms.put(sides[0], s);
-					System.out.println(s);
+					s.trim();
+					list[i] = s;
+					//System.out.print(list[i]);
 				}
-
+				nonTerms.put(sides[0], list);
 			}
 			
 		}
-		catch(Exception ex)
+		catch(Exception ex){
+			
+		}
 		
 	}
 	
