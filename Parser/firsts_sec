@@ -1,117 +1,117 @@
-program=empty,int,void,binary,decimal,$
+program=empty@int@void@binary@decimal@$
 
-programz=left_parenthesis,comma,semicolon,left_bracket,$
+programz=(@,@;@[@$
 
-programz7=semicolon,comma,$
+programz7=;@,@$
 
-programz1=int,void,binary,decimal,empty,$
+programz1=int@void@binary@decimal@empty@$
 
-programz2=int,void,binary,decimal,empty,$
+programz2=int@void@binary@decimal@empty@$
 
-funclist=int,void,binary,decimal,$
+funclist=int@void@binary@decimal@$
 
-func=int,void,binary,decimal,int,void,binary,decimal
+func=int@void@binary@decimal@int@void@binary@decimal
 
-funcz=semicolon,left_brace,int,void,binary,decimal
+funcz=;@{@int@void@binary@decimal
 
-funcz6=ID,if,while,return,break,continue,read,write,print,int,void,binary,decimal,right_brace,int,void,binary,decimal
+funcz6=ID@if@while@return@break@continue@read@write@print@int@void@binary@decimal@}@int@void@binary@decimal
 
-funcz7=ID,if,while,return,break,continue,read,write,print,rigth_brace,int,void,binary,decimal
+funcz7=ID@if@while@return@break@continue@read@write@print@}@int@void@binary@decimal
 
-funcdecl=semicolon,left_brace,int,void,binary,decimal
+funcdecl=;@{@int@void@binary@decimal
 
-funcdeclz=right_paranthesis,void,int,binary,decimal,semicolon,left_brace,int,void,binary,decimal
+funcdeclz=)@void@int@binary@decimal@;@{@int@void@binary@decimal
 
-funcdeclz2=right_paranthesis,ID,semicolon,left_brace,int,void,binary,decimal
+funcdeclz2=)@ID@;@{@int@void@binary@decimal
 
-funcdeclz6=right_paranthesis,comma,semicolon,left_brace,int,void,binary,decimal
+funcdeclz6=)@,@;@{@int@void@binary@decimal
 
-funcdeclz3=comma,right_paranthesis,semicolon,left_brace,int,void,binary,decimal
+funcdeclz3=,@)@;@{@int@void@binary@decimal
 
-funcdeclz4=comma,right_paranthesis,semicolon,left_brace,int,void,binary,decimal
+funcdeclz4=,@)@;@{@int@void@binary@decimal
 
-funcdeclz5=comma,right_paranthesis,semicolon,left_brace,int,void,binary,decimal
+funcdeclz5=,@)@;@{@int@void@binary@decimal
 
-typename=int,void,binary,decimal,ID
+typename=int@void@binary@decimal@ID
 
-non-emptylist=int,void,binary,decimal,right_paranthesis
+non-emptylist=int@void@binary@decimal@)
 
-non-emptylistz=empty,comma,right_paranthesis
+non-emptylistz=empty@,@)
 
-non-emptylistp=comma,right_paranthesis
+non-emptylistp=,@)
 
-datadecls=int,void,binary,decimal,int,void,binary,decimal,empty,right_paranthesis,ID,semicolon,comma,$
+datadecls=int@void@binary@decimal@int@void@binary@decimal@empty@)@ID@;@,@$
 
-datadeclsz=empty,int,void,binary,decimal,int,void,binary,decimal,empty,right_paranthesis,ID,semicolon,comma,$
+datadeclsz=empty@int@void@binary@decimal@int@void@binary@decimal@empty@)@ID@;@,@$
 
-idlist=ID,semicolon
+idlist=ID@;
 
-idlistz=empty,comma,semicolon
+idlistz=empty@,@;
 
-idlistp=comma,semicolon
+idlistp=,@;
 
-idlistpz=empty,ID,semicolon
+idlistpz=empty@ID@;
 
-id=ID,equal_sign,comma,empty,semicolon,
+id=ID@equal_sign@,@empty@;@
 
-idz=empty,left_bracket,equal_sign,comma,empty,semicolon,
+idz=empty@[@equal_sign@,@empty@;@
 
-blockstatements=left_brace,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+blockstatements={@empty@ID@if@while@return@break@continue@read@write@print@}
 
-blockstatementsz=ID,if,while,return,break,continue,read,write,print,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+blockstatementsz=ID@if@while@return@break@continue@read@write@print@empty@ID@if@while@return@break@continue@read@write@print@}
 
-statements=ID,if,while,return,break,continue,read,write,print,right_brace
+statements=ID@if@while@return@break@continue@read@write@print@}
 
-statementsz=empty,ID,if,while,return,break,continue,read,write,print,right_brace
+statementsz=empty@ID@if@while@return@break@continue@read@write@print@}
 
-statement=ID,if,while,return,break,continue,read,write,print,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+statement=ID@if@while@return@break@continue@read@write@print@empty@ID@if@while@return@break@continue@read@write@print@}
 
-statementz=left_bracket,equal_sign,left_parenthesis,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+statementz=[@equal_sign@(@empty@ID@if@while@return@break@continue@read@write@print@}
 
-statementz1=right_paranthesis,ID,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+statementz1=)@ID@empty@ID@if@while@return@break@continue@read@write@print@}
 
-exprlist=ID,right_paranthesis
+exprlist=ID@)
 
-non-emptyexprlist=ID,right_paranthesis
+non-emptyexprlist=ID@)
 
-non-emptyexprlistp=empty,comma,right_paranthesis
+non-emptyexprlistp=empty@,@)
 
-ifstatement=if,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+ifstatement=if@empty@ID@if@while@return@break@continue@read@write@print@}
 
-conditionexpression=ID,right_paranthesis
+conditionexpression=ID@)
 
-conditionexpressionz=empty,double_and_sign,double_or_sign,right_paranthesis
+conditionexpressionz=empty@&&@||@)
 
-conditionop=double_and_sign,double_or_sign,double_and_sign,double_or_sign
+conditionop=&&@||@&&@||
 
-condition=ID,right_paranthesis
+condition=ID@)
 
-comparisonop===,!=,>,>=,<,<=,right_paranthesis
+comparisonop===@!=@>@>=@<@<=@)
 
-whilestatement=while,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+whilestatement=while@empty@ID@if@while@return@break@continue@read@write@print@}
 
-returnstatement=return,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+returnstatement=return@empty@ID@if@while@return@break@continue@read@write@print@}
 
-returnstatementz=ID,semicolon,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+returnstatementz=ID@;@empty@ID@if@while@return@break@continue@read@write@print@}
 
-breakstatement=break,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+breakstatement=break@empty@ID@if@while@return@break@continue@read@write@print@}
 
-continuestatement=continue,empty,ID,if,while,return,break,continue,read,write,print,right_brace
+continuestatement=continue@empty@ID@if@while@return@break@continue@read@write@print@}
 
-expression=ID,right_paranthesis
+expression=ID@)
 
-expressionp=plus_sign,minus_sign,empty,right_paranthesis
+expressionp=+@-@empty@)
 
-addop=plus_sign,minus_sign,ID
+addop=+@-@ID
 
-term=ID,plus_sign,minus_sign,empty,right_paranthesis
+term=ID@+@-@empty@)
 
-termp=empty,star_sign,forward_slash,plus_sign,minus_sign,empty,right_paranthesis
+termp=empty@*@/@+@-@empty@)
 
-mulop=star_sign,forward_slash,ID
+mulop=*@/@ID
 
-factor=ID,NUMBER,minus_sign,left_parenthesis,empty,star_sign,forward_slash,plus_sign,minus_sign,empty,right_paranthesis
+factor=ID@NUMBER@-@(@empty@*@/@+@-@empty@)
 
-factorz=empty,left_bracket,left_parenthesis,empty,star_sign,forward_slash,plus_sign,minus_sign,empty,right_paranthesis
+factorz=empty@[@(@empty@*@/@+@-@empty@)
 
-factorz1=right_paranthesis,ID,empty,star_sign,forward_slash,plus_sign,minus_sign,empty,right_paranthesis
+factorz1=)@ID@empty@*@/@+@-@empty@)
