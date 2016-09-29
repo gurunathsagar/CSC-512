@@ -1,175 +1,175 @@
- program =   int, void, binary, decimal 
- 
-
- program z =  left_parenthesis, comma, semicolon, left_bracket  
-  
-
- program z7 =  semicolon, comma 
-  
-
- program z1 =  int, void, binary, decimal   
- 
-
- program z2 =  int, void, binary, decimal  
- 
-
- func list =  int, void, binary, decimal 
- 
-
- func =  int, void, binary, decimal 
-  
-
- func z =  semicolon, left_brace 
- 
-
- func z6 =  ID, if, while, return, break, continue, read, write, print, int, void, binary, decimal, right_brace
- 
-
- func z7 =  ID, if, while, return, break, continue, read, write, print, rigth_brace 
- 
-
- func decl =  semicolon, left_brace 
- 
-
- func decl z =  right_paranthesis, void, int, binary, decimal 
- 
-
- func decl z2 =  right_paranthesis, ID 
- 
-
- func decl z6 =  right_paranthesis, comma 
- 
-
- func decl z3 =  comma, right_paranthesis 
- 
-
- func decl z4 =  comma, right_paranthesis 
- 
-
- func decl z5 =  comma, right_paranthesis 
- 
-
- type name =  int, void, binary, decimal 
- 
-
- non-empty list =  int, void, binary, decimal 
- 
-
- non-empty list z =    comma 
- 
-
- non-empty list p =  comma 
+program=int,void,binary,decimal
 
 
- data decls =  int, void, binary, decimal 
- 
- 
- data decls z =    int, void, binary, decimal 
- 
- 
- id list =  ID 
- 
- 
- id list z =    comma 
- 
-
- id list p =  comma 
- 
-
- id list p z =    ID 
- 
-
- id =  ID 
- 
-
- id z =    left_bracket 
- 
-
- block statements =  left_brace 
+programz=left_parenthesis,comma,semicolon,left_bracket
 
 
- block statements z =  ID, if, while, return, break, continue, read, write, print 
+programz7=semicolon,comma
 
 
- statements =  ID, if, while, return, break, continue, read, write, print 
- 
-
- statements z =    ID, if, while, return, break, continue, read, write, print 
- 
-
- statement =  ID, if, while, return, break, continue, read, write, print 
-  
-
- statement z =  left_bracket, equal_sign, left_parenthesis 
- 
-
- statement z1 =  right_paranthesis, ID 
- 
-
- expr list =  ID 
- 
-
- non-empty expr list =  ID 
- 
-
- non-empty expr list p =    comma 
- 
-
- if statement =  if 
- 
-
- condition expression =  ID 
- 
-
- condition expression z =    double_and_sign, double_or_sign 
- 
-
- condition op =  double_and_sign, double_or_sign 
- 
-
- condition =  ID 
+programz1=int,void,binary,decimal
 
 
- comparison op =  ==, !=, , =, , = 
- 
+programz2=int,void,binary,decimal
 
- while statement =  while 
- 
 
- return statement =  return 
- 
+funclist=int,void,binary,decimal
 
- return statement z =  ID, semicolon 
- 
 
- break statement =  break 
- 
+func=int,void,binary,decimal
 
- continue statement =  continue 
- 
 
- expression =  ID 
- 
+funcz=semicolon,left_brace
 
- expression p =  plus_sign, minus_sign  
- 
 
- addop =  plus_sign, minus_sign 
- 
+funcz6=ID,if,while,return,break,continue,read,write,print,int,void,binary,decimal,right_brace
 
- term =  ID 
- 
 
- term p =    star_sign, forward_slash 
- 
+funcz7=ID,if,while,return,break,continue,read,write,print,rigth_brace
 
- mulop =  star_sign, forward_slash 
- 
 
- factor =  ID, NUMBER, minus_sign, left_parenthesis 
-  
-                    
- factor z =    left_bracket, left_parenthesis 
-  
+funcdecl=semicolon,left_brace
 
- factor z1 =  right_paranthesis, ID 
+
+funcdeclz=right_paranthesis,void,int,binary,decimal
+
+
+funcdeclz2=right_paranthesis,ID
+
+
+funcdeclz6=right_paranthesis,comma
+
+
+funcdeclz3=comma,right_paranthesis
+
+
+funcdeclz4=comma,right_paranthesis
+
+
+funcdeclz5=comma,right_paranthesis
+
+
+typename=int,void,binary,decimal
+
+
+non-emptylist=int,void,binary,decimal
+
+
+non-emptylistz=comma
+
+
+non-emptylistp=comma
+
+
+datadecls=int,void,binary,decimal
+
+
+datadeclsz=int,void,binary,decimal
+
+
+idlist=ID
+
+
+idlistz=comma
+
+
+idlistp=comma
+
+
+idlistpz=ID
+
+
+id=ID
+
+
+idz=left_bracket
+
+
+blockstatements=left_brace
+
+
+blockstatementsz=ID,if,while,return,break,continue,read,write,print
+
+
+statements=ID,if,while,return,break,continue,read,write,print
+
+
+statementsz=ID,if,while,return,break,continue,read,write,print
+
+
+statement=ID,if,while,return,break,continue,read,write,print
+
+
+statementz=left_bracket,equal_sign,left_parenthesis
+
+
+statementz1=right_paranthesis,ID
+
+
+exprlist=ID
+
+
+non-emptyexprlist=ID
+
+
+non-emptyexprlistp=comma
+
+
+ifstatement=if
+
+
+conditionexpression=ID
+
+
+conditionexpressionz=double_and_sign,double_or_sign
+
+
+conditionop=double_and_sign,double_or_sign
+
+
+condition=ID
+
+
+comparisonop===,!=,,=,,=
+
+
+whilestatement=while
+
+
+returnstatement=return
+
+
+returnstatementz=ID,semicolon
+
+
+breakstatement=break
+
+
+continuestatement=continue
+
+
+expression=ID
+
+
+expressionp=plus_sign,minus_sign
+
+
+addop=plus_sign,minus_sign
+
+
+term=ID
+
+
+termp=star_sign,forward_slash
+
+
+mulop=star_sign,forward_slash
+
+
+factor=ID,NUMBER,minus_sign,left_parenthesis
+
+
+factorz=left_bracket,left_parenthesis
+
+
+factorz1=right_paranthesis,ID
