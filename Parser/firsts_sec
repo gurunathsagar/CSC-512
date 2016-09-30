@@ -1,117 +1,117 @@
-program=empty@int@void@binary@decimal@$
+program`empty@int@void@binary@decimal@$
 
-programz=(@,@;@[@$
+programz`(@,@;@[@$
 
-programz7=;@,@$
+programz7`;@,@$
 
-programz1=int@void@binary@decimal@empty@$
+programz1`int@void@binary@decimal@empty@$
 
-programz2=int@void@binary@decimal@empty@$
+programz2`int@void@binary@decimal@empty@$
 
-funclist=int@void@binary@decimal@$
+funclist`int@void@binary@decimal@$
 
-func=int@void@binary@decimal@int@void@binary@decimal
+func`int@void@binary@decimal@int@void@binary@decimal
 
-funcz=;@{@int@void@binary@decimal
+funcz`;@{@int@void@binary@decimal
 
-funcz6=ID@if@while@return@break@continue@read@write@print@int@void@binary@decimal@}@int@void@binary@decimal
+funcz6`ID@if@while@return@break@continue@read@write@print@int@void@binary@decimal@}@int@void@binary@decimal
 
-funcz7=ID@if@while@return@break@continue@read@write@print@}@int@void@binary@decimal
+funcz7`ID@if@while@return@break@continue@read@write@print@}@int@void@binary@decimal
 
-funcdecl=;@{@int@void@binary@decimal
+funcdecl`;@{@int@void@binary@decimal
 
-funcdeclz=)@void@int@binary@decimal@;@{@int@void@binary@decimal
+funcdeclz`)@void@int@binary@decimal@;@{@int@void@binary@decimal
 
-funcdeclz2=)@ID@;@{@int@void@binary@decimal
+funcdeclz2`)@ID@;@{@int@void@binary@decimal
 
-funcdeclz6=)@,@;@{@int@void@binary@decimal
+funcdeclz6`)@,@;@{@int@void@binary@decimal
 
-funcdeclz3=,@)@;@{@int@void@binary@decimal
+funcdeclz3`,@)@;@{@int@void@binary@decimal
 
-funcdeclz4=,@)@;@{@int@void@binary@decimal
+funcdeclz4`,@)@;@{@int@void@binary@decimal
 
-funcdeclz5=,@)@;@{@int@void@binary@decimal
+funcdeclz5`,@)@;@{@int@void@binary@decimal
 
-typename=int@void@binary@decimal@ID
+typename`int@void@binary@decimal@ID
 
-non-emptylist=int@void@binary@decimal@)
+non-emptylist`int@void@binary@decimal@)
 
-non-emptylistz=empty@,@)
+non-emptylistz`empty@,@)
 
-non-emptylistp=,@)
+non-emptylistp`,@)
 
-datadecls=int@void@binary@decimal@int@void@binary@decimal@empty@)@ID@;@,@$
+datadecls`int@void@binary@decimal@int@void@binary@decimal@empty@)@ID@;@,@$
 
-datadeclsz=empty@int@void@binary@decimal@int@void@binary@decimal@empty@)@ID@;@,@$
+datadeclsz`empty@int@void@binary@decimal@int@void@binary@decimal@empty@)@ID@;@,@$
 
-idlist=ID@;
+idlist`ID@;
 
-idlistz=empty@,@;
+idlistz`empty@,@;
 
-idlistp=,@;
+idlistp`,@;
 
-idlistpz=empty@ID@;
+idlistpz`empty@ID@;
 
-id=ID@equal_sign@,@empty@;@
+id`ID@`@,@empty@;@
 
-idz=empty@[@equal_sign@,@empty@;@
+idz`empty@[@`@,@empty@;@
 
-blockstatements={@empty@ID@if@while@return@break@continue@read@write@print@}
+blockstatements`{@empty@ID@if@while@return@break@continue@read@write@print@}
 
-blockstatementsz=ID@if@while@return@break@continue@read@write@print@empty@ID@if@while@return@break@continue@read@write@print@}
+blockstatementsz`ID@if@while@return@break@continue@read@write@print@empty@ID@if@while@return@break@continue@read@write@print@}
 
-statements=ID@if@while@return@break@continue@read@write@print@}
+statements`ID@if@while@return@break@continue@read@write@print@}
 
-statementsz=empty@ID@if@while@return@break@continue@read@write@print@}
+statementsz`empty@ID@if@while@return@break@continue@read@write@print@}
 
-statement=ID@if@while@return@break@continue@read@write@print@empty@ID@if@while@return@break@continue@read@write@print@}
+statement`ID@if@while@return@break@continue@read@write@print@empty@ID@if@while@return@break@continue@read@write@print@}
 
-statementz=[@equal_sign@(@empty@ID@if@while@return@break@continue@read@write@print@}
+statementz`[@`@(@empty@ID@if@while@return@break@continue@read@write@print@}
 
-statementz1=)@ID@empty@ID@if@while@return@break@continue@read@write@print@}
+statementz1`)@ID@empty@ID@if@while@return@break@continue@read@write@print@}
 
-exprlist=ID@)
+exprlist`ID@)
 
-non-emptyexprlist=ID@)
+non-emptyexprlist`ID@)
 
-non-emptyexprlistp=empty@,@)
+non-emptyexprlistp`empty@,@)
 
-ifstatement=if@empty@ID@if@while@return@break@continue@read@write@print@}
+ifstatement`if@empty@ID@if@while@return@break@continue@read@write@print@}
 
-conditionexpression=ID@)
+conditionexpression`ID@)
 
-conditionexpressionz=empty@&&@||@)
+conditionexpressionz`empty@&&@||@)
 
-conditionop=&&@||@&&@||
+conditionop`&&@||@&&@||
 
-condition=ID@)
+condition`ID@)
 
-comparisonop===@!=@>@>=@<@<=@)
+comparisonop`==@!=@>@>=@<@<=@)
 
-whilestatement=while@empty@ID@if@while@return@break@continue@read@write@print@}
+whilestatement`while@empty@ID@if@while@return@break@continue@read@write@print@}
 
-returnstatement=return@empty@ID@if@while@return@break@continue@read@write@print@}
+returnstatement`return@empty@ID@if@while@return@break@continue@read@write@print@}
 
-returnstatementz=ID@;@empty@ID@if@while@return@break@continue@read@write@print@}
+returnstatementz`ID@;@empty@ID@if@while@return@break@continue@read@write@print@}
 
-breakstatement=break@empty@ID@if@while@return@break@continue@read@write@print@}
+breakstatement`break@empty@ID@if@while@return@break@continue@read@write@print@}
 
-continuestatement=continue@empty@ID@if@while@return@break@continue@read@write@print@}
+continuestatement`continue@empty@ID@if@while@return@break@continue@read@write@print@}
 
-expression=ID@)
+expression`ID@)
 
-expressionp=+@-@empty@)
+expressionp`+@-@empty@)
 
-addop=+@-@ID
+addop`+@-@ID
 
-term=ID@+@-@empty@)
+term`ID@+@-@empty@)
 
-termp=empty@*@/@+@-@empty@)
+termp`empty@*@/@+@-@empty@)
 
-mulop=*@/@ID
+mulop`*@/@ID
 
-factor=ID@NUMBER@-@(@empty@*@/@+@-@empty@)
+factor`ID@NUMBER@-@(@empty@*@/@+@-@empty@)
 
-factorz=empty@[@(@empty@*@/@+@-@empty@)
+factorz`empty@[@(@empty@*@/@+@-@empty@)
 
-factorz1=)@ID@empty@*@/@+@-@empty@)
+factorz1`)@ID@empty@*@/@+@-@empty@)

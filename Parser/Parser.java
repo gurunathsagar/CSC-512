@@ -29,7 +29,7 @@ public class Parser extends ScannerProj{
 				if(str.length() <= 5)
 					continue;
 				int i=0;
-				String[] sides = str.split("=");
+				String[] sides = str.split("`");
 				sides[0].trim();
 				sides[1].trim();
 				String[] vals = sides[1].split("@");
