@@ -1,0 +1,177 @@
+First + of each peoduction:
+
+Format: Production = first+
+
+<program> --> empty                         = eof
+			| <type name> ID <program z>    = int, void, binary, decimal
+
+<program z> --> left_parenthesis <func decl z> <func z> <func list z>       = {
+			| comma <id> <id list p> semicolon <data decls> <program z1>    = ,
+			| semicolon <data decls> <program z1>                           = ;
+			| left_bracket <expression> right_bracket <program z7>          = [
+
+<program z7> --> semicolon <data decls> <program z1>                        = ;
+			| comma <id> <id list p> semicolon <data decls> <program z1>    = ,
+    
+<program z1> --> <type name> ID left_parenthesis <func decl z> <func z> <func list> = int, void, binary, decimal
+				| empty                                                             = eof
+
+<func list> --> <func> <func list z>    = int, void, binary, decimal
+				
+<func list z> --> empty                 = eof
+				| <func list>           = int, void, binary, decimal
+
+<func> --> <func decl> <func z>         = int, void, binary, decimal
+
+<func z> --> semicolon                  = ;
+		| left_brace <func z6>          = {
+
+<func z6> --> <data decls> <func z7>    = int, void, binary, decimal
+			| <statements> right_brace  = ID, NUMBER, -, (
+			| right_brace               = }
+
+<func z7> --> <statements> right_brace  = ID, NUMBER, -, (
+			| right_brace               = }
+
+<func decl> --> <type name> ID left_parenthesis <func decl z> = int, void, binary, decimal
+
+<func decl z> --> right_parenthesis         = )
+				| void <func decl z2>       = void 
+				| int ID <func decl z3>     = int
+				| binary ID  <func decl z3> = binary
+				| decimal ID <func decl z3> = decimal   
+
+<func decl z2> --> right_parenthesis        = )
+				 | ID <func decl z6>        = ID
+				 
+<func decl z6> --> right_paranthesis                    = )
+				|  <non-empty list p> right paranthesis = ,
+
+<func decl z3> --> comma <type name> ID <non-empty list p> right_parenthesis    = ,
+				|  right_parenthesis                                            = )
+
+<type name> --> int     
+				| void 
+				| binary 
+				| decimal  
+				
+<non-empty list p> --> empty                                        = )
+					|	comma <type name> ID <non-empty list p>     = ,
+
+<data decls> -->  <type name> <id list> semicolon <data decls z>    = int, void, binary, decimal
+
+<data decls z> --> empty                                            = }, ;, ,, eof
+				| <type name> <id list> semicolon <data decls z>    = int, void, binary, decimal
+				
+<id list> --> <id> <id list z>                                      = ID, NUMBER, -, (
+
+<id list z> --> empty           =   ; 
+			  | <id list p>     =   ID, NUMBER, -, (
+
+<id list p> --> comma <id> <id list p z>    = ,
+
+<id list p z> --> empty         = ,, ;
+				| <id list p>   = ID, NUMBER, -, (
+
+<id> --> ID <id z>  = ID, NUMBER, -, (
+
+<id z> -> empty                                     = ;, ,, 
+		| left_bracket <expression> right_bracket   = [								
+
+
+<block statements> --> left_brace <block statements z>  = {
+					
+<block statements z> --> <statements> right_brace   = ID, NUMBER, -, (
+						| right_brace               = }
+
+<statements> --> <statement> <statements z>		= ID, NUMBER, -, (
+
+<statements z> --> empty                        = }
+				|  <statement> <statements z>   = ID, NUMBER, -, (
+
+<statement> --> ID <statement z>                                            = ID, NUMBER, -, (
+			| <if statement>                                                = if
+			| <while statement>                                             = while
+			| <return statement>                                            = return
+			| <break statement>                                             = break
+			| <continue statement>                                          = continue
+			| read left_parenthesis  ID right_parenthesis semicolon         = read
+			| write left_parenthesis <expression> right_parenthesis semicolon = write
+			| print left_parenthesis  STRING right_parenthesis semicolon    = print
+
+<statement z> --> left_bracket <expression> right_bracket equal_sign <expression> semicolon = [
+				| equal_sign <expression> semicolon                                         = =
+				| left_parenthesis <statement z1>                                           = {
+				
+<statement z1> --> right_parenthesis semicolon              = )
+				 | <expr list> right_parenthesis semicolon	= ID, NUMBER, -, (					 
+
+<expr list> --> <expression> <non-empty expr list p>    = ID, NUMBER, -, (
+
+<non-empty expr list p> --> comma <expression> <non-empty expr list p>  = ,
+						  | empty                                       = ID, NUMBER, -, (, }, ;
+
+<if statement> --> if left_parenthesis <condition expression> right_parenthesis <block statements> = if
+
+<condition expression> -->  <condition> <condition expression z> = ID, NUMBER, -, (
+
+<condition expression z> --> <condition op> <condition> = &&, ||
+							| empty                     = ID, NUMBER, -, (, )
+
+<condition op> --> double_and_sign  = &&
+				 | double_or_sign   = ||
+
+<condition> --> <expression> <comparison op> <expression> = ID, NUMBER, -, (
+
+<comparison op> --> == 
+				  | != 
+				  | > 
+				  | >= 
+				  | < 
+				  | <=
+						  
+<while statement> --> while left_parenthesis <condition expression> right_parenthesis <block statements> = while
+
+<return statement> --> return <return statement z> = return
+
+<return statement z> --> <expression> semicolon = ID, NUMBER, -, (
+					 | semicolon                = ;
+					 
+<break statement> ---> break semicolon          = break
+
+<continue statement> ---> continue semicolon	= continue				  
+						  
+<expression> --> <term> <expression p>          = ID, NUMBER, -, (
+
+<expression p> --> <addop> <term> <expression p>    = +
+				 | empty                            = ID, NUMBER, -, (
+
+<addop> --> plus_sign   = +
+		  | minus_sign  = - 
+
+<term> --> <factor> <term p> = ID, NUMBER, -, (
+
+<term p> --> <mulop> <factor> <term p>  = *
+			| empty                     = +, -, ), &&, ||, ID, NUMBER, -, (
+						  
+<mulop> --> star_sign   = *
+		  | forward_slash = /
+
+<factor> --> ID <factor z>  = ID
+			| NUMBER        = NUMBER
+			| minus_sign NUMBER    = -
+			| left_parenthesis <expres sion> right_parenthesis  = (
+				  
+<factor z> --> empty    = ID, NUMBER, -, (, +, *, /, &&, ||, ), ;
+			| left_bracket <expression> right_bracket   = [
+			| left_parenthesis <factor z1>              = ]
+			
+<factor z1> --> right_parenthesis                       = )
+			  | <expr list> right_parenthesis           = ID, NUMBER, -, (
+						  
+
+Total number of  non-terminals: 54
+Total number of production rules: 112
+
+Proof for first+ of each production:
+

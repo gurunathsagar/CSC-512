@@ -1,0 +1,25 @@
+Author: Gurunath Ashok Hanamsagar
+UnityID: ghanams
+
+Pre-Requisite:
+
+1. ScannerProject.java Attached in the zip must be present in the same folder as Parser.java.
+2. hashFile must be present in the same folder as Parser.java.
+
+How to run?
+
+Running Scanner:
+- javac ScannerProject.java
+
+Running Parser:
+- javac Parser.java
+- java Parser <example_file.c>
+
+Note: ScannerProject.class must be present before the "java Parser file_name" can be used.
+
+Output: As per given in the question, output is of the format:
+
+PASS variables = X, functions = Y, statements = Z or FAIL
+
+Grammar for the Parser is attached in the zip.
+File is present which describes on what basis each of the production makes a choice of what path to follow.
