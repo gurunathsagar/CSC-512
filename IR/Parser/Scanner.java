@@ -48,7 +48,7 @@ public class Scanner {
 			
 		}
 		outputTokens.add(TokenNames.eof);
-		Pair<TokenNames, String> fin = new Pair<>(TokenNames.eof, "eof");
+		Pair<TokenNames, String> fin = new Pair<TokenNames, String>(TokenNames.eof, "eof");
 		allTokens.add(fin);
 		
 		return allTokens;
