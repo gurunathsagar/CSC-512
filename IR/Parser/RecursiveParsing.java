@@ -58,31 +58,32 @@ public class RecursiveParsing {
 	private void mergeToLocal(){
 		
 		while(tokens.size()!=1)
-			localQueue.add(tokens.remove(tokens.size()-1));
+			localQueue.add(tokens.remove(0));
 			
 		while(tempList.size()!=0)
 			localQueue.add(tempList.pop());
 			
-		localQueue.add(tokens.get(tokens.size()-1));
+		localQueue.add(tokens.remove(tokens.size()-1));
 		
 	}
 	
 	private void storeLatestTokens(){
 		
-		while(localQueue.get(localQueue.size()-1).equals(";") ){
-			tempList.push(localQueue.get(localQueue.size()-1));
-			localQueue.remove(localQueue.size()-1);
+		while(! (localQueue.get(localQueue.size()-1).equals(";") || 
+			localQueue.get(localQueue.size()-1).equals("{") || 
+			localQueue.get(localQueue.size()-1).equals("}")) ){
+			tempList.push(localQueue.remove(localQueue.size()-1));
 		}
 		
 	}
 	
 	private void evaluateExpression(){
 		
-		//System.out.println(expStr);
+		System.out.println(expStr);
 		
 		for(int i=0;i<expStr.size();i++){
 			
-			System.out.println(expStr.get(i));
+			//System.out.println(expStr.get(i));
 			
 			if(expStr.get(i).equals("(")){
 				opStack.push("(");
@@ -110,7 +111,7 @@ public class RecursiveParsing {
 				String v1 = valStack.pop();
 				String eval = "local[" + localCount + "] = " + v1 + obj + v2;
 				System.out.println(" eval = " + eval);
-				tokens.add(eval);
+				tokens.add(eval+";");
 				valStack.push("local["+localCount+"]");
 				localCount++;
 
@@ -126,7 +127,7 @@ public class RecursiveParsing {
 				String v1 = valStack.pop();
 				String eval = "local[" + localCount + "] = " + v1 + obj + v2;
 				System.out.println(" eval = " + eval);
-				tokens.add(eval);
+				tokens.add(eval+";");
 				valStack.push("local["+localCount+"]");
 				localCount++;
 					
@@ -149,7 +150,7 @@ public class RecursiveParsing {
 					String eval = "local[" + localCount + "] = " + v1 + obj + v2;
 					obj = opStack.pop();
 					System.out.println(" eval = " + eval);
-					tokens.add(eval);
+					tokens.add(eval+";");
 					valStack.push("local["+localCount+"]");
 					localCount++;
 				}
@@ -164,7 +165,7 @@ public class RecursiveParsing {
 			String v1 = valStack.pop();
 			
 			String eval = "local[" + localCount + "] = " + v1 + obj + v2;
-			tokens.add(eval);
+			tokens.add(eval+";");
 			valStack.push("local["+localCount+"]");
 			localCount++;
 			System.out.println(eval);
@@ -640,9 +641,13 @@ public class RecursiveParsing {
 	private boolean block_statements() {
 		if(inputTokens.firstElement() == TokenNames.left_brace) {
 			currentToken = inputTokens.remove(0);
+			newToken = tokenList.remove(0);
+			localQueue.add(newToken);
 			if(statements()) {
 				if(inputTokens.firstElement() == TokenNames.right_brace) {
 					currentToken = inputTokens.remove(0);
+					newToken = tokenList.remove(0);
+					localQueue.add(newToken);
 					return true;
 				}
 			}
@@ -706,14 +711,31 @@ public class RecursiveParsing {
 		}
 		if(inputTokens.firstElement() == TokenNames.read) {
 			currentToken = inputTokens.remove(0);
+			newToken = tokenList.remove(0);
+			localQueue.add(newToken);
 			if(inputTokens.firstElement() == TokenNames.left_parenthesis) {
 				currentToken = inputTokens.remove(0);
+				newToken = tokenList.remove(0);
+				localQueue.add(newToken);
 				if(inputTokens.firstElement() == TokenNames.ID) {
 					currentToken = inputTokens.remove(0);
+					newToken = tokenList.remove(0);
+					
+					if(localMap.containsKey(newToken))
+						localQueue.add(localMap.get(newToken));
+					else if(globalMap.containsKey(newToken))
+						localQueue.add(globalMap.get(newToken));
+					else
+						System.out.println("Undeclared Variable");
+						
 					if(inputTokens.firstElement() == TokenNames.right_parenthesis) {
 						currentToken = inputTokens.remove(0);
+						newToken = tokenList.remove(0);
+						localQueue.add(newToken);
 						if(inputTokens.firstElement() == TokenNames.semicolon) {
 							currentToken = inputTokens.remove(0);
+							newToken = tokenList.remove(0);
+							localQueue.add(newToken);
 							return true;
 						}
 					}
@@ -725,13 +747,24 @@ public class RecursiveParsing {
 		// write left_parenthesis <expression> right_parenthesis semicolon
 		if(inputTokens.firstElement() == TokenNames.write) {
 			currentToken = inputTokens.remove(0);
+			newToken = tokenList.remove(0);
+			localQueue.add(newToken);
 			if(inputTokens.firstElement() == TokenNames.left_parenthesis) {
 				currentToken = inputTokens.remove(0);
+				newToken = tokenList.remove(0);
+				localQueue.add(newToken);
 				if(expression()) {
 					if(inputTokens.firstElement() == TokenNames.right_parenthesis) {
 						currentToken = inputTokens.remove(0);
+						evaluateExpression();
+						expStr.clear();
+						mergeToLocal();
+						newToken = tokenList.remove(0);
+						localQueue.add(newToken);
 						if(inputTokens.firstElement() == TokenNames.semicolon) {
 							currentToken = inputTokens.remove(0);
+							newToken = tokenList.remove(0);
+							localQueue.add(newToken);
 							return true;
 						}
 					}
@@ -743,14 +776,24 @@ public class RecursiveParsing {
 		// print left_parenthesis  STRING right_parenthesis semicolon
 		if(inputTokens.firstElement() == TokenNames.print) {
 			currentToken = inputTokens.remove(0);
+			newToken = tokenList.remove(0);
+			localQueue.add(newToken);
 			if(inputTokens.firstElement() == TokenNames.left_parenthesis) {
 				currentToken = inputTokens.remove(0);
+				newToken = tokenList.remove(0);
+				localQueue.add(newToken);
 				if(inputTokens.firstElement() == TokenNames.STRING) {
 					currentToken = inputTokens.remove(0);
+					newToken = tokenList.remove(0);
+					localQueue.add(newToken);
 					if(inputTokens.firstElement() == TokenNames.right_parenthesis) {
 						currentToken = inputTokens.remove(0);
+						newToken = tokenList.remove(0);
+						localQueue.add(newToken);
 						if(inputTokens.firstElement() == TokenNames.semicolon) {
 							currentToken = inputTokens.remove(0);
+							newToken = tokenList.remove(0);
+							localQueue.add(newToken);
 							return true;
 						}
 					}
@@ -791,8 +834,7 @@ public class RecursiveParsing {
 					evaluateExpression();
 					expStr.clear();
 					mergeToLocal();
-					errorPrint("from assignment Z");
-					printArray(localQueue);
+					//printArray(localQueue);
 					
 					newToken = tokenList.remove(0);
 					localQueue.add(newToken);
@@ -1018,8 +1060,12 @@ public class RecursiveParsing {
 	private boolean break_statement() {
 		if(inputTokens.firstElement() == TokenNames.Break) {
 			currentToken = inputTokens.remove(0);
+			newToken = tokenList.remove(0);
+			localQueue.add(newToken);
 			if(inputTokens.firstElement() == TokenNames.semicolon) {
 				currentToken = inputTokens.remove(0);
+				newToken = tokenList.remove(0);
+				localQueue.add(newToken);
 				return true;
 			}
 		}
@@ -1033,9 +1079,16 @@ public class RecursiveParsing {
 	private boolean continue_statement() {
 		if(inputTokens.firstElement() == TokenNames.Continue) {
 			currentToken = inputTokens.remove(0);
+			newToken = tokenList.remove(0);
+			localQueue.add(newToken);
 			if(inputTokens.firstElement() == TokenNames.semicolon) {
 				currentToken = inputTokens.remove(0);
+				newToken = tokenList.remove(0);
+				localQueue.add(newToken);
+				printArray(localQueue);
 				return true;
+				
+				
 			}
 		}
 		return false;
@@ -1046,6 +1099,9 @@ public class RecursiveParsing {
 	 * @return a boolean
 	 */
 	private boolean expression() {
+		
+		storeLatestTokens();
+		
 		if(term()) {
 			return expression_prime();
 		}
@@ -1125,20 +1181,17 @@ public class RecursiveParsing {
 	 */
 	private boolean factor() {
 		if(inputTokens.firstElement() == TokenNames.ID) {
-			
-			storeLatestTokens();
-			
+	
 			currentToken = inputTokens.remove(0);
 			newToken = tokenList.remove(0);
 			if(localMap.containsKey(newToken)){
-				localQueue.add(localMap.get(newToken));
+				expStr.add(localMap.get(newToken));
 			}
 			else if(globalMap.containsKey(newToken)){
-				localQueue.add(globalMap.get(newToken));
+				expStr.add(globalMap.get(newToken));
 			}
 			else
 				System.out.println("Undeclared variable" + newToken);
-			expStr.add(newToken);
 			return factor_Z();
 		}
 		// NUMBER
