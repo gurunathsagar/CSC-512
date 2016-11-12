@@ -55,6 +55,18 @@ public class RecursiveParsing {
 		//localMap = new HashMap<String, String>();
 	}
 	
+	private void mergeToLocal(){
+		
+		while(tokens.size()!=1)
+			localQueue.add(tokens.get(tokens.size()-1));
+			
+		while(tempList.size()!=0)
+			localQueue.add(tempList.pop());
+			
+		localQueue.add(tokens.get(tokens.size()-1));
+		
+	}
+	
 	private void storeLatestTokens(){
 		
 		while(localQueue.get(localQueue.size()-1).equals(";") ){
@@ -778,6 +790,10 @@ public class RecursiveParsing {
 					currentToken = inputTokens.remove(0);
 					evaluateExpression();
 					expStr.clear();
+					mergeToLocal();
+					errorPrint("from assignment Z");
+					printArray(localQueue);
+					
 					newToken = tokenList.remove(0);
 					localQueue.add(newToken);
 					return true;
