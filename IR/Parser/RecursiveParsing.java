@@ -76,10 +76,14 @@ public class RecursiveParsing {
 				opStack.push("(");
 			}
 			
-			else if( opStack.peek().equals("(") || opStack.size()==0 ){
+			else if( opStack.size()==0 || (opStack.peek().equals("(")) ){
 				if( expStr.get(i).equals("/") || expStr.get(i).equals("*") 
 					|| expStr.get(i).equals("+") || expStr.get(i).equals("-") )
 					opStack.push(String.valueOf(expStr.get(i)));
+				else if(expStr.get(i).equals(")")){
+					opStack.pop();
+					continue;
+				}
 				
 				else
 					valStack.push(String.valueOf(expStr.get(i)));
@@ -118,11 +122,13 @@ public class RecursiveParsing {
 				
 			else if((expStr.get(i).equals("/") || expStr.get(i).equals("*") )
 				&& (opStack.peek().equals("+") || opStack.peek().equals("-")) ){
+				
 				opStack.push(String.valueOf(expStr.get(i)));
 					
 				}
 			else if(expStr.get(i).equals(")")){
 				String obj = opStack.pop();
+				
 				while( !obj.equals("(") ){
 					
 					String v2 = valStack.pop();
@@ -139,6 +145,22 @@ public class RecursiveParsing {
 			else
 				valStack.push(String.valueOf(expStr.get(i)));
 		}
+		
+		while(opStack.size()!=0){
+			String obj = opStack.pop();
+			String v2 = valStack.pop();
+			String v1 = valStack.pop();
+			
+			String eval = "local[" + localCount + "] = " + v1 + obj + v2;
+			tokens.add(eval);
+			valStack.push("local["+localCount+"]");
+			localCount++;
+			System.out.println(eval);
+			
+		}
+		
+		if(valStack.size()!=0)
+			tokens.add(valStack.pop());
 		
 		for(String s: tokens){
 			
@@ -1115,10 +1137,10 @@ public class RecursiveParsing {
 		if(inputTokens.firstElement() == TokenNames.minus_sign) {
 			currentToken = inputTokens.remove(0);
 			newToken = tokenList.remove(0);
-			expStr.add(newToken);
+			String str = newToken;
 			if(inputTokens.firstElement() == TokenNames.NUMBER) {
 				currentToken = inputTokens.remove(0);
-				newToken = tokenList.remove(0);
+				newToken = str+tokenList.remove(0);
 				expStr.add(newToken);
 				return true;
 			}
