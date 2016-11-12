@@ -58,7 +58,7 @@ public class RecursiveParsing {
 	private void mergeToLocal(){
 		
 		while(tokens.size()!=1)
-			localQueue.add(tokens.get(tokens.size()-1));
+			localQueue.add(tokens.remove(tokens.size()-1));
 			
 		while(tempList.size()!=0)
 			localQueue.add(tempList.pop());
