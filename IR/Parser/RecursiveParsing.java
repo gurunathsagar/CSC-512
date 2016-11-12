@@ -10,6 +10,16 @@ import java.util.*;
  */
 public class RecursiveParsing {
 	
+	public class TokenType{
+		int offset;
+		int size;
+		
+		TokenType(int off, int s){
+			this.offset = off;
+			this.size = s;
+		}
+	}
+	
 	private static int numVariables;  // Keeps track of the number of variables 
 	private static int numFunctions;  // Keeps track of the number of functions
 	private static int numStatements; // Keeps track of the number of statements
@@ -33,6 +43,8 @@ public class RecursiveParsing {
 	private static Stack<String> opStack = new Stack<String>();
 	private static List<String> tokens = new ArrayList<String>();
 	private static List<String> conditionTokens = new ArrayList<String>();
+	private static Map<String, TokenType> globalArray = new HashMap<String, TokenType>();
+	private static Map<String, TokenType> localArray = new HashMap<String, TokenType>();
 	
 	private static StringBuilder globalString;
 	
@@ -54,6 +66,30 @@ public class RecursiveParsing {
 		firstGlobal = true;
 		//globalMap = new HashMap<String, String>();
 		//localMap = new HashMap<String, String>();
+	}
+	
+	private void testGlobal(){
+		
+		for(String s: globalArray.keySet()){
+			sayLine(s + " offset " + globalArray.get(s).offset + " size " +  globalArray.get(s).size);
+		}
+		
+	}
+	
+	private void testLocalArray(){
+		
+		for(String s: localArray.keySet()){
+			sayLine(s + " offset " + localArray.get(s).offset + " size " +  localArray.get(s).size);
+		}
+		
+	}
+	
+	private void say(String str){
+		System.out.print(str);
+	}
+	
+	private void sayLine(String str){
+		System.out.println(str);
 	}
 	
 	private void mergeToLocal(){
@@ -221,6 +257,7 @@ public class RecursiveParsing {
 			
 		localQueue.clear();
 		localMap.clear();
+		localArray.clear();
 		localCount=0;
 		
 	}
@@ -252,7 +289,6 @@ public class RecursiveParsing {
 		// check if we are at the eof
 		firstGlobal = true;
 		localQueue.clear();
-		
 		if(inputTokens.firstElement() == TokenNames.eof) {
 			return true;
 		}
@@ -474,7 +510,7 @@ public class RecursiveParsing {
 					newToken = tokenList.remove(0);
 					localQueue.add(newToken);
 					localMap.put(newToken, "local[" + localCount++ + "]");
-					System.out.println(" Putting in ID list prime " + newToken);
+					System.out.println(" Putting in ID list prime 1 " + newToken);
 					return non_empty_list_prime();
 				}
 				return false;
@@ -492,6 +528,7 @@ public class RecursiveParsing {
 		if(id_list_Z()) {
 			if(inputTokens.firstElement() == TokenNames.semicolon) {
 				currentToken = inputTokens.remove(0);
+				newToken = tokenList.remove(0);
 				// count variable 
 				numVariables += 1;
 				return program(); //data_decls_Z();
@@ -551,10 +588,27 @@ public class RecursiveParsing {
 	 */
 	private boolean id_list_Z() {
 		if(inputTokens.firstElement() == TokenNames.left_bracket) {
+			firstGlobal = false;
 			currentToken = inputTokens.remove(0);
-			if(expression()) {
+			String idToken = tokenList.remove(0);
+			newToken = tokenList.remove(0);
+			if(inputTokens.firstElement() == TokenNames.NUMBER) {
+				currentToken = inputTokens.remove(0);
+				newToken = tokenList.remove(0);
+				if(global){
+					if(globalArray.containsKey(idToken)){
+						System.out.println("Redeclaration error");
+						return false;
+					}
+					int num = Integer.parseInt(newToken);
+					TokenType obj = new TokenType(globalCount, num);
+					sayLine("Putting in " + idToken);
+					globalArray.put(idToken, obj);
+					globalCount += num;
+				}
 				if(inputTokens.firstElement() == TokenNames.right_bracket) {
 					currentToken = inputTokens.remove(0);
+					newToken = tokenList.remove(0);
 					return id_list_prime();
 				}
 			}
@@ -571,18 +625,25 @@ public class RecursiveParsing {
 			
 			declaringPhase = true;
 			
-			if(global){
+			if(global && !tokenList.get(1).equals("[")){
 				if(firstGlobal){
 					firstGlobal = false;
-					System.out.println("new=" + tokenList.firstElement());
-					if(globalMap.containsKey(tokenList.firstElement())){
+					if(globalMap.containsKey(tokenList.get(0))){
 						System.out.println("Redeclaration error");
 						return false;
 					}
-					globalMap.put(tokenList.firstElement(), "global[" + globalCount++ + "]");
-					System.out.println(" Putting in ID list prime " + tokenList.firstElement());
+					globalMap.put(tokenList.get(0), "global[" + globalCount++ + "]");
+					System.out.println(" Putting in ID list prime 2 " + tokenList.get(0));
 					newToken = tokenList.remove(0);
 				}
+				/*else{
+					System.out.println(" Putting in ID list prime -- " + tokenList.get(1));
+					if(globalMap.containsKey(tokenList.get(1))){
+						System.out.println("Redeclaration error");
+						return false;
+					}
+					globalMap.put(tokenList.get(1), "global[" + globalCount++ + "]");
+				}*/
 			}
 			newToken = tokenList.remove(0);
 			currentToken = inputTokens.remove(0);
@@ -602,23 +663,27 @@ public class RecursiveParsing {
 		if(inputTokens.firstElement() == TokenNames.ID) {
 			currentToken = inputTokens.remove(0);
 			
-			
 			if(global && declaringPhase){
-				if(globalMap.containsKey(tokenList.firstElement())){
+				if(globalMap.containsKey(tokenList.firstElement()) || globalArray.containsKey(tokenList.firstElement())){
 					System.out.println("Redeclaration error");
 					return false;
 				}
-				globalMap.put(tokenList.firstElement(), "global[" + globalCount++ + "]");
-				System.out.println(" Putting in ID new=" + tokenList.firstElement());
+				
+				if(!(tokenList.get(1).equals("[")) ){
+					globalMap.put(tokenList.firstElement(), "global[" + globalCount++ + "]");
+					System.out.println(" Putting in ID new= " + tokenList.firstElement());
+				}
 			}
 			
 			if(!global && declaringPhase){
-				if(localMap.containsKey(tokenList.firstElement())){
+				if(localMap.containsKey(tokenList.firstElement()) || localArray.containsKey(tokenList.firstElement())){
 					System.out.println("Redeclaration error");
 					return false;
 				}
-				localMap.put(tokenList.firstElement(), "local[" + localCount++ + "]");
-				System.out.println(" Putting local in ID new=" + tokenList.firstElement());
+				if(!(tokenList.get(1).equals("[")) ){
+					localMap.put(tokenList.firstElement(), "local[" + localCount++ + "]");
+					System.out.println(" Putting local in ID new=" + tokenList.firstElement());
+				}
 			}
 			
 			newToken = tokenList.remove(0);
@@ -633,11 +698,47 @@ public class RecursiveParsing {
 	 */
 	private boolean id_Z() {
 		if(inputTokens.firstElement() == TokenNames.left_bracket) {
+			String tokenId = newToken;
 			currentToken = inputTokens.remove(0);
 			newToken = tokenList.remove(0);
-			if(expression()) {
+			if(declaringPhase){
+				if(inputTokens.firstElement() == TokenNames.NUMBER){
+					currentToken = inputTokens.remove(0);
+					newToken = tokenList.remove(0);
+					if(global){
+						TokenType obj = new TokenType(globalCount, Integer.parseInt(newToken));
+						globalArray.put(tokenId, obj);
+						globalCount += Integer.parseInt(newToken);
+					}
+					else{
+						TokenType obj = new TokenType(localCount, Integer.parseInt(newToken));
+						localArray.put(tokenId, obj);
+						localCount += Integer.parseInt(newToken);
+					}
+					if(inputTokens.firstElement() == TokenNames.right_bracket) {
+						currentToken = inputTokens.remove(0);
+						newToken = tokenList.remove(0);
+						// count the number of variables 
+						numVariables += 1;
+						return true;
+					}
+					return false;
+				}
+				else{
+					return false;	// In declaring phase, expressions not allowed.
+				}
+			}
+			else if(expression()) {
 				if(inputTokens.firstElement() == TokenNames.right_bracket) {
 					currentToken = inputTokens.remove(0);
+					evaluateExpression();
+					expStr.clear();
+					mergeToLocal();
+					//printArray(localQueue);
+					
+					newToken = tokenList.remove(0);
+					localQueue.add(newToken);
+					
 					// count the number of variables 
 					numVariables += 1;
 					return true;
@@ -1149,6 +1250,7 @@ public class RecursiveParsing {
 				currentToken = inputTokens.remove(0);
 				newToken = tokenList.remove(0);
 				localQueue.add(newToken);
+				testLocalArray();
 				return true;
 				
 				
