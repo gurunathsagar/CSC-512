@@ -1083,6 +1083,8 @@ public class RecursiveParsing {
 	private boolean return_statement() {
 		if(inputTokens.firstElement() == TokenNames.Return) {
 			currentToken = inputTokens.remove(0);
+			newToken = tokenList.remove(0);
+			localQueue.add(newToken);
 			return return_statement_Z();
 		}
 		return false;
@@ -1096,12 +1098,20 @@ public class RecursiveParsing {
 		if(expression()) {
 			if(inputTokens.firstElement() == TokenNames.semicolon) {
 				currentToken = inputTokens.remove(0);
+				evaluateExpression();
+				expStr.clear();
+				mergeToLocal();
+				newToken = tokenList.remove(0);
+				localQueue.add(newToken);
+				printArray(localQueue);
 				return true;
 			}
 			return false;
 		}
 		if(inputTokens.firstElement() == TokenNames.semicolon) {
 			currentToken = inputTokens.remove(0);
+			newToken = tokenList.remove(0);
+			localQueue.add(newToken);
 			return true;
 		}
 		return false;
