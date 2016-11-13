@@ -131,7 +131,7 @@ public class RecursiveParsing {
 	
 	private void evaluateExpression(){
 		
-		System.out.println(expStr);
+		//System.out.println(expStr);
 		
 		for(int i=0;i<expStr.size();i++){
 			
@@ -229,7 +229,7 @@ public class RecursiveParsing {
 		
 		for(String s: tokens){
 			
-			//System.out.println( "In tokens" + s);
+			System.out.println( "In tokens" + s);
 		}
 	}
 	
@@ -959,7 +959,6 @@ public class RecursiveParsing {
 					expStr.clear();
 					mergeToLocal();
 					//printArray(localQueue);
-					
 					newToken = tokenList.remove(0);
 					localQueue.add(newToken);
 					return true;
@@ -1428,15 +1427,23 @@ public class RecursiveParsing {
 	private boolean factor() {
 		if(inputTokens.firstElement() == TokenNames.ID) {
 			currentToken = inputTokens.remove(0);
-			newToken = tokenList.remove(0);
-			if(localMap.containsKey(newToken)){
-				expStr.add(localMap.get(newToken));
+			
+			if(localMap.containsKey(tokenList.firstElement())){
+				expStr.add(localMap.get(tokenList.firstElement()));
+				newToken = tokenList.remove(0);
 			}
-			else if(globalMap.containsKey(newToken)){
-				expStr.add(globalMap.get(newToken));
+			else if(localArray.containsKey(tokenList.firstElement())){
+				
+			}
+			else if(globalArray.containsKey(tokenList.firstElement())){
+				
+			}
+			else if(globalMap.containsKey(tokenList.firstElement())){
+				expStr.add(globalMap.get(tokenList.firstElement()));
+				newToken = tokenList.remove(0);
 			}
 			else
-				System.out.println("Undeclared variable" + newToken);
+				System.out.println("Undeclared variable" + tokenList.firstElement());
 			return factor_Z();
 		}
 		// NUMBER
@@ -1487,13 +1494,32 @@ public class RecursiveParsing {
 		// left_bracket <expression> right_bracket
 		if(inputTokens.firstElement() == TokenNames.left_bracket) {
 			currentToken = inputTokens.remove(0);
-			newToken = tokenList.remove(0);
-			expStr.add(newToken);
+			String idToken = tokenList.remove(0);	// ID
+			newToken = tokenList.remove(0);			// [
+			String addToken = "";
+			if(localArray.containsKey(idToken)){
+				addToken = "local[";
+			}
+			else if(globalArray.containsKey(idToken)){
+				addToken = "global[";
+			}
+			List<String> tempStrings = new ArrayList<String>();
+			for(String s: expStr){
+				tempStrings.add(s);
+			}
+			expStr.clear();
 			if(expression()) {
 				if(inputTokens.firstElement() == TokenNames.right_bracket) {
+					say(" expStr array = " + expStr);
 					currentToken = inputTokens.remove(0);
 					newToken = tokenList.remove(0);
-					expStr.add(newToken);
+					evaluateExpression();
+					expStr.clear();
+					for(String s:tempStrings)
+						expStr.add(s);
+					tempStrings.clear();
+					expStr.add(addToken+Integer.toString(localCount-1)+"]");
+					//printArray(localQueue);
 					return true;
 				}
 			}
