@@ -229,7 +229,7 @@ public class RecursiveParsing {
 		
 		for(String s: tokens){
 			
-			System.out.println( "In tokens" + s);
+			//System.out.println( "In tokens" + s);
 		}
 	}
 	
@@ -1497,11 +1497,14 @@ public class RecursiveParsing {
 			String idToken = tokenList.remove(0);	// ID
 			newToken = tokenList.remove(0);			// [
 			String addToken = "";
+			boolean flag=true;;
 			if(localArray.containsKey(idToken)){
 				addToken = "local[";
+				flag = true;
 			}
 			else if(globalArray.containsKey(idToken)){
-				addToken = "global[";
+				addToken = "local[";
+				flag = false;
 			}
 			List<String> tempStrings = new ArrayList<String>();
 			for(String s: expStr){
@@ -1510,15 +1513,34 @@ public class RecursiveParsing {
 			expStr.clear();
 			if(expression()) {
 				if(inputTokens.firstElement() == TokenNames.right_bracket) {
-					say(" expStr array = " + expStr);
+					//say("** expStr array = " + expStr + "tokens" + tokens +"\n");
 					currentToken = inputTokens.remove(0);
 					newToken = tokenList.remove(0);
 					evaluateExpression();
+					//sayLine("Printing tokens:" + tokens);
+					tokens.add("local[" + localCount + "] = " + tokens.remove(tokens.size()-1) + ";");
+					localCount++;
+					if(flag){
+						tokens.add("local["+localCount+"] = " + addToken 
+							+ Integer.toString(localCount-1)+"] + " + Integer.toString(localArray.get(idToken).offset) + ";");
+						localCount++;
+						tokens.add("local["+ localCount + "] = " + "local[local["+Integer.toString(localCount-1)+"]];" );
+						localCount++;
+					}
+					else{
+						tokens.add("local["+localCount+"] = " + addToken 
+							+ Integer.toString(localCount-1)+"] + " + Integer.toString(globalArray.get(idToken).offset) + ";");
+						localCount++;
+						tokens.add("local["+ localCount + "] = " + "global[local["+Integer.toString(localCount-1)+"]];" );
+						localCount++;
+					}
+					
 					expStr.clear();
 					for(String s:tempStrings)
 						expStr.add(s);
 					tempStrings.clear();
-					expStr.add(addToken+Integer.toString(localCount-1)+"]");
+					expStr.add("local[" + Integer.toString(localCount-1)+"]");
+					//expStr.add(addToken+Integer.toString(localCount-1)+"]");
 					//printArray(localQueue);
 					return true;
 				}
