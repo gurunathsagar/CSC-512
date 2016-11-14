@@ -41,7 +41,7 @@ public class Scanner {
 		
 		// keep getting the next token until we get a null
 		while((tokenPair = scan.getNextToken()) != null) {
-			if(tokenPair.getKey() != TokenNames.Space && tokenPair.getKey() != TokenNames.MetaStatements) {
+			if(tokenPair.getKey() != TokenNames.Space ) {
 				outputTokens.addElement(tokenPair.getKey());
 				allTokens.addElement(tokenPair);
 			}

@@ -73,6 +73,8 @@ public class RecursiveParsing{
 	private static int goToCount;
 	private static Stack<Labels> goToMarkers = new Stack<Labels>();
 	private static Stack<WhileLabels> goToMarkersWhile = new Stack<WhileLabels>();
+	private static List<String> params = new ArrayList<String>();
+	private static boolean paramPhase;
 	
 	/**
 	 * Constructor initializes the fields and get the list of input tokens
@@ -92,6 +94,7 @@ public class RecursiveParsing{
 		firstGlobal = true;
 		bracketCount = 0;
 		goToCount = 0;
+		paramPhase = false;
 		//globalMap = new HashMap<String, String>();
 		//localMap = new HashMap<String, String>();
 	}
@@ -192,7 +195,7 @@ public class RecursiveParsing{
 				String v2 = valStack.pop();
 				String v1 = valStack.pop();
 				String eval = "local[" + localCount + "] = " + v1 + obj + v2;
-				System.out.println(" eval = " + eval);
+				sayLine(" eval = " + eval);
 				tokens.add(eval+";");
 				valStack.push("local["+localCount+"]");
 				localCount++;
@@ -208,7 +211,7 @@ public class RecursiveParsing{
 				String v2 = valStack.pop();
 				String v1 = valStack.pop();
 				String eval = "local[" + localCount + "] = " + v1 + obj + v2;
-				System.out.println(" eval = " + eval);
+				sayLine(" eval = " + eval);
 				tokens.add(eval+";");
 				valStack.push("local["+localCount+"]");
 				localCount++;
@@ -231,7 +234,7 @@ public class RecursiveParsing{
 					
 					String eval = "local[" + localCount + "] = " + v1 + obj + v2;
 					obj = opStack.pop();
-					System.out.println(" eval = " + eval);
+					sayLine(" eval = " + eval);
 					tokens.add(eval+";");
 					valStack.push("local["+localCount+"]");
 					localCount++;
@@ -250,7 +253,7 @@ public class RecursiveParsing{
 			tokens.add(eval+";");
 			valStack.push("local["+localCount+"]");
 			localCount++;
-			System.out.println(eval);
+			sayLine(eval);
 			
 		}
 		
@@ -364,6 +367,8 @@ public class RecursiveParsing{
 				currentToken = inputTokens.remove(0); // get the ID token
 				localQueue.add(tokenList.firstElement());
 				//newToken = tokenList.remove(0);
+				paramPhase = true;
+				params.clear();
 				
 				if(data_decls() && func_list()) {
 					//check to see if the remaining token is eof is so this is a legal syntax
@@ -434,6 +439,14 @@ public class RecursiveParsing{
 			declaringPhase = true;
 			//printArray(globalQueue);
 			localQueue.add("int localCount;");
+			if(localCount > 0){
+				int count = 0;
+				for(String s: params){
+					localQueue.add("local[" + Integer.toString(count) +"] = " + s + ";");
+					count++;
+				}
+				
+			}
 			
 			if(data_decls_Z()) {
 				if(statements()) {
@@ -456,7 +469,7 @@ public class RecursiveParsing{
 							}
 						}
 						//printArray(localQueue);
-						
+						params.clear();
 						mergeLocalToGlobal();
 						//printArray(globalQueue);
 						localQueue.clear();
@@ -577,7 +590,8 @@ public class RecursiveParsing{
 				newToken = tokenList.remove(0);
 				localQueue.add(newToken);
 				localMap.put(newToken, "local[" + localCount++ + "]");
-				System.out.println(" Non empty list " + newToken);
+				params.add(newToken);
+				//System.out.println(" Non empty list " + newToken);
 				return non_empty_list_prime();
 			}
 		}
@@ -600,6 +614,7 @@ public class RecursiveParsing{
 					newToken = tokenList.remove(0);
 					localQueue.add(newToken);
 					localMap.put(newToken, "local[" + localCount++ + "]");
+					params.add(newToken);
 					sayLine(" Putting in ID list prime 1 " + newToken);
 					return non_empty_list_prime();
 				}
@@ -905,7 +920,7 @@ public class RecursiveParsing{
 				newToken = tokenList.remove(0);
 			}
 			else{
-				System.out.println("Undeclared variable" + tokenList.firstElement());
+				sayLine("Undeclared variable" + tokenList.firstElement());
 			}
 			bracketCount = 0;
 			
@@ -943,7 +958,7 @@ public class RecursiveParsing{
 					else if(globalMap.containsKey(newToken))
 						localQueue.add(globalMap.get(newToken));
 					else
-						System.out.println("Undeclared Variable");
+						sayLine("Undeclared Variable");
 						
 					if(inputTokens.firstElement() == TokenNames.right_parenthesis) {
 						currentToken = inputTokens.remove(0);
@@ -1685,7 +1700,7 @@ public class RecursiveParsing{
 				newToken = tokenList.remove(0);
 			}
 			else
-				System.out.println("Undeclared variable" + tokenList.firstElement());
+				sayLine("Undeclared variable" + tokenList.firstElement());
 			return factor_Z();
 		}
 		// NUMBER
