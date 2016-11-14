@@ -113,11 +113,11 @@ public class RecursiveParsing{
 	}
 	
 	private void say(String str){
-		System.out.print(str);
+		//System.out.print(str);
 	}
 	
 	private void sayLine(String str){
-		System.out.println(str);
+		//System.out.println(str);
 	}
 	
 	private void mergeToLocal(){
@@ -292,7 +292,7 @@ public class RecursiveParsing{
 	}
 	
 	private void errorPrint(String s){
-		System.out.println(" " + s + " ");
+		//System.out.println(" " + s + " ");
 	}
 	
 	/**
@@ -346,6 +346,14 @@ public class RecursiveParsing{
 	 */
 	private boolean program() {
 		// check if we are at the eof
+		
+		while(inputTokens.firstElement() == TokenNames.MetaStatements){
+			currentToken = inputTokens.remove(0);
+			newToken = tokenList.remove(0);
+			
+			globalQueue.add(newToken);
+		}
+		
 		firstGlobal = true;
 		localQueue.clear();
 		if(inputTokens.firstElement() == TokenNames.eof) {
@@ -436,7 +444,7 @@ public class RecursiveParsing{
 						localQueue.add(newToken);
 						numFunctions += 1;
 						
-						sayLine("lCount" + localQueue.size());
+						//sayLine("lCount" + localQueue.size());
 						if(localCount > 0){
 							
 							for(int i=0;i<localQueue.size();i++){
@@ -592,7 +600,7 @@ public class RecursiveParsing{
 					newToken = tokenList.remove(0);
 					localQueue.add(newToken);
 					localMap.put(newToken, "local[" + localCount++ + "]");
-					System.out.println(" Putting in ID list prime 1 " + newToken);
+					sayLine(" Putting in ID list prime 1 " + newToken);
 					return non_empty_list_prime();
 				}
 				return false;
@@ -685,7 +693,7 @@ public class RecursiveParsing{
 					}
 					int num = Integer.parseInt(newToken);
 					TokenType obj = new TokenType(globalCount, num);
-					sayLine("Putting in " + idToken);
+					//sayLine("Putting in " + idToken);
 					globalArray.put(idToken, obj);
 					globalCount += num;
 				}
@@ -748,24 +756,24 @@ public class RecursiveParsing{
 			
 			if(global && declaringPhase){
 				if(globalMap.containsKey(tokenList.firstElement()) || globalArray.containsKey(tokenList.firstElement())){
-					System.out.println("Redeclaration error");
+					sayLine("Redeclaration error");
 					return false;
 				}
 				
 				if(!(tokenList.get(1).equals("[")) ){
 					globalMap.put(tokenList.firstElement(), "global[" + globalCount++ + "]");
-					System.out.println(" Putting in ID new= " + tokenList.firstElement());
+					sayLine(" Putting in ID new= " + tokenList.firstElement());
 				}
 			}
 			
 			if(!global && declaringPhase){
 				if(localMap.containsKey(tokenList.firstElement()) || localArray.containsKey(tokenList.firstElement())){
-					System.out.println("Redeclaration error");
+					sayLine("Redeclaration error");
 					return false;
 				}
 				if(!(tokenList.get(1).equals("[")) ){
 					localMap.put(tokenList.firstElement(), "local[" + localCount++ + "]");
-					System.out.println(" Putting local in ID new=" + tokenList.firstElement());
+					sayLine(" Putting local in ID new=" + tokenList.firstElement());
 				}
 			}
 			
@@ -1132,7 +1140,7 @@ public class RecursiveParsing{
 					if(inputTokens.firstElement() == TokenNames.right_bracket) {
 						currentToken = inputTokens.remove(0);
 						evaluateExpression();
-						System.out.println("tokens = " + tokens);
+						sayLine("tokens = " + tokens);
 						
 						if(flag){
 							tokens.add("local[" + localCount + "] = " + tokens.remove(tokens.size()-1) + "+" + localArray.get(idToken).offset + ";");
@@ -1185,10 +1193,10 @@ public class RecursiveParsing{
 		if(inputTokens.firstElement() == TokenNames.left_parenthesis) {
 			currentToken = inputTokens.remove(0);
 			newToken = tokenList.remove(0);	// ID
-			sayLine("Inside func call. Adding this token to localQueue"  + newToken);
+			//sayLine("Inside func call. Adding this token to localQueue"  + newToken);
 			localQueue.add(newToken);
 			newToken = tokenList.remove(0);	// (
-			sayLine("2 Inside func call. Adding this token to localQueue"  + newToken);
+			//sayLine("2 Inside func call. Adding this token to localQueue"  + newToken);
 			localQueue.add(newToken);
 			
 			if(expr_list()) {
@@ -1320,7 +1328,6 @@ public class RecursiveParsing{
 						boolean res = block_statements();
 						
 						label = "l" + goToMarkers.pop().end + ":";
-						goToCount -= 2;
 						localQueue.add(label);
 						
 						return res;
@@ -1471,7 +1478,6 @@ public class RecursiveParsing{
 						localQueue.add("goto w" + goToMarkersWhile.peek().start + ";");
 						
 						l = "w" + goToMarkersWhile.pop().end + ":;";
-						goToCount -= 3;
 						localQueue.add(l);
 						
 						return result;
@@ -1504,7 +1510,7 @@ public class RecursiveParsing{
 	 */
 	private boolean return_statement_Z() {
 		
-		sayLine("Hi. Printing nextToken here" + tokenList.firstElement());
+		//sayLine("Hi. Printing nextToken here" + tokenList.firstElement());
 		
 		if(expression()) {
 			if(inputTokens.firstElement() == TokenNames.semicolon) {
