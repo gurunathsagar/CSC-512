@@ -1,14 +1,15 @@
 import java.util.Vector;
 import java.util.*;
+import java.io.*;
 /**
  * Implements the recursive decent parser 
  */
 
 /**
- * @author Danny Reinheimer
+ * @author Gurunath Ashok Hanamsagar
  *
  */
-public class RecursiveParsing {
+public class RecursiveParsing{
 	
 	public class TokenType{
 		int offset;
@@ -297,13 +298,43 @@ public class RecursiveParsing {
 	/**
 	 * initialized the parsing and prints out the results when finished
 	 */
-	public void parse() {
+	public void parse(String fileName) throws IOException{
 		program();
 		if(inputTokens.firstElement() == TokenNames.eof) {
-			System.out.println("Pass variable " + numVariables + " function " + numFunctions + " statement " + numStatements);
+			//System.out.println("Pass variable " + numVariables + " function " + numFunctions + " statement " + numStatements);
+			
+			try{
+				String parts[] = fileName.split("\\.");
+				File file = new File(parts[0]+"_gen.c");
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+				BufferedWriter bw = new BufferedWriter(fw);
+				
+				for(int i=0;i<globalQueue.size();i++){
+				
+					if(globalQueue.get(i).contains(";") || globalQueue.get(i).contains("}") || globalQueue.get(i).contains("{") 
+					|| globalQueue.get(i).contains("if") || globalQueue.get(i).contains("while") ){
+						
+						bw.write(globalQueue.get(i) + "\n");
+						
+					}
+					else{
+						bw.write(globalQueue.get(i));
+					}
+				}
+				
+				bw.close();
+				fw.close();
+				
+			}catch (IOException e) {
+			     e.printStackTrace();
+			} 
+			finally {
+
+			  }
+			
 		}
 		else {
-			System.out.println("error");
+			System.out.println("error in Parsing");
 		}
 	}
 	
@@ -394,6 +425,8 @@ public class RecursiveParsing {
 			global = false;
 			declaringPhase = true;
 			//printArray(globalQueue);
+			localQueue.add("int localCount;");
+			
 			if(data_decls_Z()) {
 				if(statements()) {
 					if(inputTokens.firstElement() == TokenNames.right_brace) {
@@ -402,9 +435,22 @@ public class RecursiveParsing {
 						newToken = tokenList.remove(0);
 						localQueue.add(newToken);
 						numFunctions += 1;
-						printArray(localQueue);
-						//sayLine("akjs dbnjkasfjkbsafjkaejkfbeasjkfejkbf");
+						
+						sayLine("lCount" + localQueue.size());
+						if(localCount > 0){
+							
+							for(int i=0;i<localQueue.size();i++){
+								if(localQueue.get(i).contains("localCount")){
+									localQueue.remove(i);
+									localQueue.add(i, "int local[" + localCount + "];");
+									break;
+								}
+							}
+						}
+						//printArray(localQueue);
+						
 						mergeLocalToGlobal();
+						//printArray(globalQueue);
 						localQueue.clear();
 						localMap.clear();
 						localArray.clear();
@@ -593,11 +639,12 @@ public class RecursiveParsing {
 	 */
 	private boolean data_decls_Z() {
 		if(type_name()) {
+			localQueue.remove(localQueue.size()-1);
 			if(id_list()) {
 				if(inputTokens.firstElement() == TokenNames.semicolon) {
 					currentToken = inputTokens.remove(0);
 					newToken = tokenList.remove(0);
-					localQueue.add(newToken);
+					//localQueue.add(newToken);
 					return data_decls_Z();
 				}
 				return false;
@@ -817,7 +864,6 @@ public class RecursiveParsing {
 		
 		declaringPhase = false;
 		//printMap(localMap);
-		
 		if(statement()) {
 			numStatements += 1;
 			return statements();

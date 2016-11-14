@@ -1,11 +1,11 @@
 import java.util.Vector;
-
+import java.io.*;
 /**
  * implements the main function that gets the file name and calls the scanner and parser 
  */
 
 /**
- * @author Danny Reinheimer
+ * @author Gurunath Ashok Hanamsagar
  *
  */
 public class Parser {
@@ -15,7 +15,7 @@ public class Parser {
 	 * starting point for the program
 	 * @param args The file name to read in and parse
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// checks to see if we are given any arguments
 		if(args.length < 1) {
 			System.out.println("Please provide an input file to process");
@@ -34,7 +34,13 @@ public class Parser {
 		}
 
 		RecursiveParsing RP = new RecursiveParsing(scannedTokens, tokenList);
-		RP.parse();
+		//System.out.println("RP" + args[0]);
+		try {
+			RP.parse(args[0]);
+		}
+		catch(IOException e){
+			
+		}
 
 	}
 	
