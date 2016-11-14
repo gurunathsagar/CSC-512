@@ -41,6 +41,9 @@ The IR code follows the Parser control flow. Each time a valid token is obtained
 queued in another queue to be put into the main queue later.  There are two major counts: localCount (number of lcoal variables required for each function)
 globalCount(Which tells the number of total global variables). The variables are used to mark the amount of memory to be allocated for each memory.
 
+Expressions are broken down to smaller ones that are acceptable by the new grammar and are stored temporarily in queues which are flushed once the 
+entire evaluation is finished.
+
 Data Structures (Most important):
 
 I have maintained 4 maps (localMap, localArray, globalMap, globalArray) and 2 queues(localQueue, globalQueue). 
