@@ -121,13 +121,14 @@ public class RecursiveParsing {
 	
 	private void mergeToLocal(){
 		
-		while(tokens.size()!=1)
+		while(tokens.size()>1)
 			localQueue.add(tokens.remove(0));
 			
-		while(tempList.size()!=0)
+		while(tempList.size()>0)
 			localQueue.add(tempList.pop());
 			
-		localQueue.add(tokens.remove(tokens.size()-1));
+		if(tokens.size()!=0)
+			localQueue.add(tokens.remove(tokens.size()-1));
 	}
 	
 	private void mergeLocalForCond(){
@@ -150,6 +151,7 @@ public class RecursiveParsing {
 	private void storeLatestTokens(){
 		
 		while(! (localQueue.get(localQueue.size()-1).contains(";") || 
+			localQueue.get(localQueue.size()-1).contains("return") ||
 			localQueue.get(localQueue.size()-1).contains("{") || 
 			localQueue.get(localQueue.size()-1).contains("}")) ){
 			tempList.push(localQueue.remove(localQueue.size()-1));
@@ -397,7 +399,15 @@ public class RecursiveParsing {
 					if(inputTokens.firstElement() == TokenNames.right_brace) {
 						currentToken = inputTokens.remove(0);
 						// Count the number of function definitions
+						newToken = tokenList.remove(0);
+						localQueue.add(newToken);
 						numFunctions += 1;
+						printArray(localQueue);
+						//sayLine("akjs dbnjkasfjkbsafjkaejkfbeasjkfejkbf");
+						mergeLocalToGlobal();
+						localQueue.clear();
+						localMap.clear();
+						localArray.clear();
 						return true;
 					}
 					return false;
@@ -840,9 +850,9 @@ public class RecursiveParsing {
 				localQueue.add(globalMap.get(tokenList.firstElement()));
 				newToken = tokenList.remove(0);
 			}
-			else
+			else{
 				System.out.println("Undeclared variable" + tokenList.firstElement());
-			
+			}
 			bracketCount = 0;
 			
 			return statement_Z();
@@ -987,8 +997,10 @@ public class RecursiveParsing {
 					evaluateExpression();
 					//System.out.println(tokens);
 					expStr.clear();
-					tokens.add("local[" + localCount + "] = " + tokens.remove(tokens.size()-1) + ";");
-					localCount++;
+					if(tokens.size()!=0){
+						tokens.add("local[" + localCount + "] = " + tokens.remove(tokens.size()-1) + ";");
+						localCount++;
+					}
 					//mergeToLocal();
 					//printArray(localQueue);
 					
@@ -1127,8 +1139,10 @@ public class RecursiveParsing {
 		if(inputTokens.firstElement() == TokenNames.left_parenthesis) {
 			currentToken = inputTokens.remove(0);
 			newToken = tokenList.remove(0);	// ID
+			sayLine("Inside func call. Adding this token to localQueue"  + newToken);
 			localQueue.add(newToken);
 			newToken = tokenList.remove(0);	// (
+			sayLine("2 Inside func call. Adding this token to localQueue"  + newToken);
 			localQueue.add(newToken);
 			
 			if(expr_list()) {
@@ -1138,6 +1152,7 @@ public class RecursiveParsing {
 					evaluateExpression();
 					//tokens.add("local[" + localCount + "] = " + tokens.remove(tokens.size()-1) + ";");
 					//localCount++;
+					expStr.clear();
 					mergeToLocal();
 					
 					newToken = tokenList.remove(0);
@@ -1145,8 +1160,7 @@ public class RecursiveParsing {
 					if(inputTokens.firstElement() == TokenNames.semicolon) {
 						currentToken = inputTokens.remove(0);
 						
-						evaluateExpression();
-						expStr.clear();
+						//evaluateExpression();
 						//mergeToLocal();
 						//printArray(localQueue);
 
@@ -1255,11 +1269,11 @@ public class RecursiveParsing {
 						label = "goto l" + goToMarkers.peek().end + ";";
 						
 						localQueue.add(label);
-						localQueue.add("l" + goToMarkers.peek().start + ":;");
+						localQueue.add("l" + goToMarkers.peek().start + ":");
 						
 						boolean res = block_statements();
 						
-						label = "l" + goToMarkers.pop().end + ":;";
+						label = "l" + goToMarkers.pop().end + ":";
 						goToCount -= 2;
 						localQueue.add(label);
 						
@@ -1432,7 +1446,7 @@ public class RecursiveParsing {
 			newToken = tokenList.remove(0);
 			localQueue.add(newToken);
 			
-			printArray(localQueue);
+			// printArray(localQueue);
 			return return_statement_Z();
 		}
 		return false;
@@ -1443,11 +1457,15 @@ public class RecursiveParsing {
 	 * @return a boolean
 	 */
 	private boolean return_statement_Z() {
+		
+		sayLine("Hi. Printing nextToken here" + tokenList.firstElement());
+		
 		if(expression()) {
 			if(inputTokens.firstElement() == TokenNames.semicolon) {
 				currentToken = inputTokens.remove(0);
 				evaluateExpression();
 				expStr.clear();
+				sayLine("Return top of stack = tempList " + tempList);
 				mergeToLocal();
 				newToken = tokenList.remove(0);
 				localQueue.add(newToken);
@@ -1739,7 +1757,6 @@ public class RecursiveParsing {
 		}
 		// left_parenthesis <expr list> right_parenthesis
 		if(inputTokens.firstElement() == TokenNames.left_parenthesis) {
-			bracketCount++;
 			currentToken = inputTokens.remove(0);
 			String idToken = tokenList.remove(0); // ID
 			newToken = tokenList.remove(0);	// (
@@ -1750,25 +1767,30 @@ public class RecursiveParsing {
 			expStr.clear();
 			if(expr_list()) {
 				if(inputTokens.firstElement() == TokenNames.right_parenthesis) {
-					bracketCount--;
 					currentToken = inputTokens.remove(0);
 					newToken = tokenList.remove(0);
 					
 					evaluateExpression();
 					
-					String temp = tokens.remove(tokens.size()-1);
-					tokens.add("local[" + localCount + "] = " + temp + ";");
-					localCount++;
-					tokens.add("local["+ localCount + "] = " + idToken + "(local["+Integer.toString(localCount-1)+"]);" );
-					tokens.add("local["+localCount+"]");
-					localCount++;
-					
+					if(tokens.size()!=0){
+						String temp = tokens.remove(tokens.size()-1);
+						tokens.add("local[" + localCount + "] = " + temp + ";");
+						localCount++;
+						tokens.add("local["+ localCount + "] = " + idToken + "(local["+Integer.toString(localCount-1)+"]);" );
+						tokens.add("local["+localCount+"]");
+						localCount++;
+					}
+					else{
+						tempStrings.add(idToken+"()");
+					}
 					expStr.clear();
 					for(String s:tempStrings)
 						expStr.add(s);
 					tempStrings.clear();
-					expStr.add(tokens.remove(tokens.size()-1));
-					System.out.println("in side" + tokens + "exprS = " + expStr);
+					if(tokens.size()!=0){
+						expStr.add(tokens.remove(tokens.size()-1));
+					}
+
 					return true;
 				}
 			}
