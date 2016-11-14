@@ -1060,19 +1060,36 @@ public class RecursiveParsing {
 			}*/
 			{
 				String addToken = "";
+				boolean flag = false;
 				if(localArray.containsKey(idToken)){
 					addToken = "local[";
+					flag = true;
 				}
 				else if(globalArray.containsKey(idToken)){
 					addToken = "global[";
+					flag = false;
 				}
 				localQueue.add(addToken);
 				if(expression()) {
 					if(inputTokens.firstElement() == TokenNames.right_bracket) {
 						currentToken = inputTokens.remove(0);
 						evaluateExpression();
+						System.out.println("tokens = " + tokens);
+						
+						if(flag){
+							tokens.add("local[" + localCount + "] = " + tokens.remove(tokens.size()-1) + "+" + localArray.get(idToken).offset + ";");
+							localCount++;
+						}
+						else{
+							tokens.add("local[" + localCount + "] = " + tokens.remove(tokens.size()-1) + "+" + globalArray.get(idToken).offset + ";" );
+							localCount++;
+						}
+						
+						tokens.add("local[" + Integer.toString(localCount-1) + "]");
+						
 						expStr.clear();
 						mergeToLocal();
+						
 						//printArray(localQueue);
 						
 						newToken = tokenList.remove(0);
