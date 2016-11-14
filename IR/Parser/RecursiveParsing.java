@@ -20,6 +20,28 @@ public class RecursiveParsing {
 		}
 	}
 	
+	public class Labels{
+		int start;
+		int end;
+		
+		Labels(int x){
+			this.start=x;
+			this.end=x+1;
+		}
+	}
+	
+	public class WhileLabels{
+		int start;
+		int mid;
+		int end;
+		
+		WhileLabels(int x){
+			this.start = x;
+			this.mid = x+1;
+			this.end = x+2;
+		}
+	}
+	
 	private static int numVariables;  // Keeps track of the number of variables 
 	private static int numFunctions;  // Keeps track of the number of functions
 	private static int numStatements; // Keeps track of the number of statements
@@ -48,6 +70,8 @@ public class RecursiveParsing {
 	private static int bracketCount;
 	private static StringBuilder globalString;
 	private static int goToCount;
+	private static Stack<Labels> goToMarkers = new Stack<Labels>();
+	private static Stack<WhileLabels> goToMarkersWhile = new Stack<WhileLabels>();
 	
 	/**
 	 * Constructor initializes the fields and get the list of input tokens
@@ -125,9 +149,9 @@ public class RecursiveParsing {
 	
 	private void storeLatestTokens(){
 		
-		while(! (localQueue.get(localQueue.size()-1).equals(";") || 
-			localQueue.get(localQueue.size()-1).equals("{") || 
-			localQueue.get(localQueue.size()-1).equals("}")) ){
+		while(! (localQueue.get(localQueue.size()-1).contains(";") || 
+			localQueue.get(localQueue.size()-1).contains("{") || 
+			localQueue.get(localQueue.size()-1).contains("}")) ){
 			tempList.push(localQueue.remove(localQueue.size()-1));
 		}
 	}
@@ -767,7 +791,6 @@ public class RecursiveParsing {
 				if(inputTokens.firstElement() == TokenNames.right_brace) {
 					currentToken = inputTokens.remove(0);
 					newToken = tokenList.remove(0);
-					localQueue.add("goto l" + Integer.toString(goToCount-1) + ":");
 					//localQueue.add(newToken);
 					return true;
 				}
@@ -1198,24 +1221,32 @@ public class RecursiveParsing {
 						}
 						expStr.clear();
 						mergeLocalForCond();
-						printArray(localQueue);
+						//printArray(localQueue);
 						mergeConditionsToLocal();
 						//printArray(localQueue);
 						newToken = tokenList.remove(0);
 						localQueue.add(newToken);
 						
-						String label = "goto l" + goToCount + ";";
-						goToCount++;
+						Labels marker = new Labels(goToCount);
+						goToMarkers.push(marker);
+						goToCount += 2;
+						
+						String label = "goto l" + goToMarkers.peek().start + ";";
 						
 						localQueue.add(label);
 						
-						label = "goto l" + goToCount + ";";
-						goToCount++;
+						label = "goto l" + goToMarkers.peek().end + ";";
 						
 						localQueue.add(label);
-						localQueue.add("goto l" + Integer.toString(goToCount-2) + ":;");
+						localQueue.add("l" + goToMarkers.peek().start + ":;");
 						
-						return block_statements();
+						boolean res = block_statements();
+						
+						label = "l" + goToMarkers.pop().end + ":;";
+						goToCount -= 2;
+						localQueue.add(label);
+						
+						return res;
 						
 					}
 				}
@@ -1309,8 +1340,14 @@ public class RecursiveParsing {
 	private boolean while_statement() {
 		if(inputTokens.firstElement() == TokenNames.While) {
 			currentToken = inputTokens.remove(0);
+			WhileLabels mark = new WhileLabels(goToCount);
+			goToMarkersWhile.push(mark);
+			goToCount += 3;
+			String l = "w" + goToMarkersWhile.peek().start + ":;";
+			localQueue.add(l);
+			
 			newToken = tokenList.remove(0);
-			localQueue.add(newToken);
+			localQueue.add("if");
 			if(inputTokens.firstElement() == TokenNames.left_parenthesis) {
 				currentToken = inputTokens.remove(0);
 				newToken = tokenList.remove(0);
@@ -1338,12 +1375,29 @@ public class RecursiveParsing {
 						}
 						expStr.clear();
 						mergeLocalForCond();
-						printArray(localQueue);
+						//printArray(localQueue);
 						mergeConditionsToLocal();
 						//printArray(localQueue);
 						newToken = tokenList.remove(0);
 						localQueue.add(newToken);
-						return block_statements();
+						
+						l = "goto w" + goToMarkersWhile.peek().mid + ";";
+						localQueue.add(l);
+						
+						l = "goto w" + goToMarkersWhile.peek().end + ";";
+						localQueue.add(l);
+						
+						localQueue.add("w" + goToMarkersWhile.peek().mid + ";");
+						
+						boolean result = block_statements();
+						
+						localQueue.add("goto w" + goToMarkersWhile.peek().start + ";");
+						
+						l = "w" + goToMarkersWhile.pop().end + ":;";
+						goToCount -= 3;
+						localQueue.add(l);
+						
+						return result;
 					}
 				}
 			}
@@ -1360,6 +1414,8 @@ public class RecursiveParsing {
 			currentToken = inputTokens.remove(0);
 			newToken = tokenList.remove(0);
 			localQueue.add(newToken);
+			
+			printArray(localQueue);
 			return return_statement_Z();
 		}
 		return false;
@@ -1378,7 +1434,7 @@ public class RecursiveParsing {
 				mergeToLocal();
 				newToken = tokenList.remove(0);
 				localQueue.add(newToken);
-				printArray(localQueue);
+				//printArray(localQueue);
 				return true;
 			}
 			return false;
@@ -1400,11 +1456,14 @@ public class RecursiveParsing {
 		if(inputTokens.firstElement() == TokenNames.Break) {
 			currentToken = inputTokens.remove(0);
 			newToken = tokenList.remove(0);
-			localQueue.add(newToken);
+			//localQueue.add(newToken);
 			if(inputTokens.firstElement() == TokenNames.semicolon) {
 				currentToken = inputTokens.remove(0);
 				newToken = tokenList.remove(0);
-				localQueue.add(newToken);
+				//localQueue.add(newToken);
+				
+				String label = "goto w" + goToMarkersWhile.peek().end + ";";
+				localQueue.add(label);
 				return true;
 			}
 		}
@@ -1419,12 +1478,15 @@ public class RecursiveParsing {
 		if(inputTokens.firstElement() == TokenNames.Continue) {
 			currentToken = inputTokens.remove(0);
 			newToken = tokenList.remove(0);
-			localQueue.add(newToken);
+			//localQueue.add(newToken);
 			if(inputTokens.firstElement() == TokenNames.semicolon) {
 				currentToken = inputTokens.remove(0);
 				newToken = tokenList.remove(0);
-				localQueue.add(newToken);
-				printArray(localQueue);
+				//localQueue.add(newToken);
+				
+				String label = "goto w" + goToMarkersWhile.peek().start + ";";
+				localQueue.add(label);
+				
 				return true;
 				
 				
