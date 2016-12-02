@@ -30,19 +30,20 @@ public class RecursiveParsing {
 	private int whileIfLabel;
 	private int whileRestLabel; 
 	public Map<String, Integer> varCount;
+	private Map<String, Integer> parameterMap = new HashMap<String, Integer>();
 	
 	
 	/*
 		Helper function to print debug output.
 	*/
-	public say(String str){
+	public void say(String str){
 		System.out.print(str);
 	}
 	
 	/*
 		Helper function to print debug output.
 	*/
-	public sayLine(String str){
+	public void sayLine(String str){
 		System.out.println(str);
 	}
 
@@ -93,12 +94,13 @@ public class RecursiveParsing {
 	 */
 	private Node program() {
 		Node programNode = new Node();
+		
 		// check if we are at the eof
 		if (inputTokens.firstElement().getKey() == TokenNames.eof) {
 			return programNode;
 		} else {
 			Node tNode = type_name();
-			if (tNode != null) {
+			if (true) {
 				if (inputTokens.firstElement().getKey() == TokenNames.ID) {
 					currentPair = inputTokens.remove(0);
 					currentToken = currentPair.getKey(); // get the ID token
@@ -109,8 +111,8 @@ public class RecursiveParsing {
 						AddIdToHashMap(currFunction, temp);
 					} else {
 						//A function declaration
-						programNode.addChild(tNode);
-						programNode.addChild(createTerminal(temp));
+						//programNode.addChild(tNode);
+						//programNode.addChild(createTerminal(temp));
 					}
 					if (programNode.addChild(data_decls())
 							&& programNode.addChild(func_list())) {
@@ -146,6 +148,7 @@ public class RecursiveParsing {
 			index = vHMap.get(currFunction, value);
 			idNode.index = index;
 			idNode.setTerminalValue("local[" + index + "]");
+			idNode.setTerminalValue("mem[base+" + index + "]");
 			return idNode;
 		} else 
 			//checks whether <id> with value is present in global hashmap
@@ -171,13 +174,13 @@ public class RecursiveParsing {
 		if (inputTokens.firstElement().getKey() == TokenNames.left_parenthesis) {
 			currentPair = inputTokens.remove(0);
 			currentToken = currentPair.getKey();
-			fNode.addChild(createTerminal(currentPair.getValue()));
+			//fNode.addChild(createTerminal(currentPair.getValue()));
 			currFunction = temp;
 			if (fNode.addChild(parameter_list())) {
 				if (inputTokens.firstElement().getKey() == TokenNames.right_parenthesis) {
 					currentPair = inputTokens.remove(0);
 					currentToken = currentPair.getKey();
-					fNode.addChild(createTerminal(currentPair.getValue()));
+					//fNode.addChild(createTerminal(currentPair.getValue()));
 					if (fNode.addChild(func_Z())) {
 						if (fNode.addChild(func_list_Z()))
 							return fNode;
@@ -212,24 +215,26 @@ public class RecursiveParsing {
 		Node f = new Node();
 		// checks if the next token is a semicolon
 		if (inputTokens.firstElement().getKey() == TokenNames.semicolon) {
-			currentToken = inputTokens.remove(0).getKey(); 
-			f.addChild(createSemiColonNode());
+			currentToken = inputTokens.remove(0).getKey();
+			parameterMap.clear();
+			//f.addChild(createSemiColonNode());
 			return f;
 		}
 
 		if (inputTokens.firstElement().getKey() == TokenNames.left_brace) {
 			currentPair = inputTokens.remove(0);
 			currentToken = currentPair.getKey();
-			f.addChild(createTerminal(currentPair.getValue()+"\n"));
+			//f.addChild(createTerminal(currentPair.getValue()+"\n"));
 			if (data_decls_Z() != null) {
 				//local array declaration
-				f.addChild(createDataDeclNode(currFunction));
+				createDataDeclNode(currFunction);
 				if (f.addChild(statements())) {
 					if (inputTokens.firstElement().getKey() == TokenNames.right_brace) {
 						currentPair = inputTokens.remove(0);
 						currentToken = currentPair.getKey();
-						f.addChild(createTerminal(currentPair.getValue()+"\n"));
+						//f.addChild(createTerminal(currentPair.getValue()+"\n"));
 						// Count the number of function definitions
+						parameterMap.clear();
 						numFunctions += 1;
 						currFunction = "global";
 						return f;
@@ -265,19 +270,18 @@ public class RecursiveParsing {
 			if (inputTokens.firstElement().getKey() == TokenNames.ID) {
 				currentPair = inputTokens.remove(0);
 				currentToken = currentPair.getKey();
-				fNode.addChild(createTerminal(currentPair.getValue()));
+				//fNode.addChild(createTerminal(currentPair.getValue()));
 				temp = currentPair.getValue();
 				if (inputTokens.firstElement().getKey() == TokenNames.left_parenthesis) {
 					currentPair = inputTokens.remove(0);
 					currentToken = currentPair.getKey();
-					fNode.addChild(createTerminal(currentPair.getValue()));
+					//fNode.addChild(createTerminal(currentPair.getValue()));
 					currFunction = temp;
 					if (fNode.addChild(parameter_list())) {
 						if (inputTokens.firstElement().getKey() == TokenNames.right_parenthesis) {
 							currentPair = inputTokens.remove(0);
 							currentToken = currentPair.getKey();
-							fNode.addChild(createTerminal(currentPair
-									.getValue()));
+							//fNode.addChild(createTerminal(currentPair.getValue()));
 							if (fNode.addChild(func_Z())) {
 								if (fNode.addChild(func_list_Z()))
 									return fNode;
@@ -307,7 +311,7 @@ public class RecursiveParsing {
 				|| inputTokens.firstElement().getKey() == TokenNames.decimal) {
 			currentPair = inputTokens.remove(0);
 			currentToken = currentPair.getKey();
-			tNode.setTerminalValue(currentPair.getValue());
+			//tNode.setTerminalValue(currentPair.getValue());
 			return tNode;
 		}
 		return null;
@@ -324,7 +328,7 @@ public class RecursiveParsing {
 		if (inputTokens.firstElement().getKey() == TokenNames.Void) {
 			currentPair = inputTokens.remove(0);
 			currentToken = currentPair.getKey();
-			pNode.addChild(createTerminal(currentPair.getValue()));
+			//pNode.addChild(createTerminal(currentPair.getValue()));
 			if (pNode.addChild(parameter_list_Z()))
 				return pNode;
 			else
@@ -348,7 +352,9 @@ public class RecursiveParsing {
 		if (inputTokens.firstElement().getKey() == TokenNames.ID) {
 			currentPair = inputTokens.remove(0);
 			currentToken = currentPair.getKey();
-			p.addChild(createTerminal(currentPair.getValue()));
+			int index = parameterMap.size();
+			parameterMap.put(currentPair.getValue(), index);
+			//p.addChild(createTerminal(currentPair.getValue()));
 			//paramters also need to be equated to array elements
 			AddParameterToHashMap(currFunction, currentPair.getValue());
 			if (p.addChild(non_empty_list_prime()))
@@ -380,11 +386,11 @@ public class RecursiveParsing {
 				|| inputTokens.firstElement().getKey() == TokenNames.decimal) {
 			currentPair = inputTokens.remove(0);
 			currentToken = currentPair.getKey();
-			n.addChild(createTerminal(currentPair.getValue()));
+			//n.addChild(createTerminal(currentPair.getValue()));
 			if (inputTokens.firstElement().getKey() == TokenNames.ID) {
 				currentPair = inputTokens.remove(0);
 				currentToken = currentPair.getKey();
-				n.addChild(createTerminal(currentPair.getValue()));
+				//n.addChild(createTerminal(currentPair.getValue()));
 				//adding the parameter to hashmap
 				AddParameterToHashMap(currFunction, currentPair.getValue());
 				if (n.addChild(non_empty_list_prime()))
@@ -407,12 +413,14 @@ public class RecursiveParsing {
 		if (inputTokens.firstElement().getKey() == TokenNames.comma) {
 			currentPair = inputTokens.remove(0);
 			currentToken = currentPair.getKey();
-			n.addChild(createTerminal(currentPair.getValue()));
+			//n.addChild(createTerminal(currentPair.getValue()));
 			if (n.addChild(type_name())) {
 				if (inputTokens.firstElement().getKey() == TokenNames.ID) {
 					currentPair = inputTokens.remove(0);
 					currentToken = currentPair.getKey();
-					n.addChild(createTerminal(currentPair.getValue()));
+					int index = parameterMap.size();
+					parameterMap.put(currentPair.getValue(), index);
+					//n.addChild(createTerminal(currentPair.getValue()));
 					//adding parameter to hashmap
 					AddParameterToHashMap(currFunction, currentPair.getValue());
 					if (n.addChild(non_empty_list_prime()))
@@ -441,8 +449,10 @@ public class RecursiveParsing {
 				// dNode.addChild(createSemiColonNode());
 				// count variable
 				numVariables += 1;
-				if (dNode.addChild(program())) // data_decls_Z();
-					return dNode;
+				if (dNode.addChild(program())) { // data_decls_Z();
+					Node dummyNode = new Node();
+					return dummyNode;
+				}
 				else
 					return null;
 			}
@@ -455,8 +465,11 @@ public class RecursiveParsing {
 				// since we consume the first id before we get here count this
 				// as a variable
 				numVariables += 1;
-				if (dNode.addChild(program()))
-					return dNode;// data_decls_Z();
+				if (dNode.addChild(program())){
+					Node dummyNode = new Node();
+					return dummyNode;
+					//return dNode;// data_decls_Z();
+				}
 				else
 					return null;
 			}
@@ -741,7 +754,7 @@ public class RecursiveParsing {
 				if (s.addChild(expNode)) {
 					s.addChild(writeNode);
 					s.addChild(lp);
-					s.addChild(createTerminal("local[" + expNode.index + "]"));
+					s.addChild(createTerminal("mem[base+" + expNode.index + "]"));
 					if (inputTokens.firstElement().getKey() == TokenNames.right_parenthesis) {
 						currentPair = inputTokens.remove(0);
 						currentToken = currentPair.getKey();
@@ -820,7 +833,7 @@ public class RecursiveParsing {
 			if (a.addChild(expNode)) {
 				a.addChild(createIdNode(value));
 				a.addChild(eNode);
-				a.addChild(createTerminal("local[" + expNode.index + "]"));
+				a.addChild(createTerminal("mem[base+" + expNode.index + "]"));
 				if (inputTokens.firstElement().getKey() == TokenNames.semicolon) {
 					currentPair = inputTokens.remove(0);
 					currentToken = currentPair.getKey();
@@ -851,7 +864,7 @@ public class RecursiveParsing {
 								int idBaseIndex = vHMap
 										.getNumVariables(currFunction);
 								vHMap.incrementNumVariables(currFunction, 1);
-								a.addChild(createTerminal("local["
+								a.addChild(createTerminal("mem[base+"
 										+ idBaseIndex + "] ="));
 								Node id = createIdNode(value);
 								int id_base = id.index;
@@ -862,17 +875,17 @@ public class RecursiveParsing {
 								int arrayIndex = vHMap
 										.getNumVariables(currFunction);
 								vHMap.incrementNumVariables(currFunction, 1);
-								a.addChild(createTerminal("local[" + arrayIndex
+								a.addChild(createTerminal("mem[base+" + arrayIndex
 										+ "] ="));
-								a.addChild(createTerminal("local["
+								a.addChild(createTerminal("mem[base+"
 										+ expNode.index + "] +"));
-								a.addChild(createTerminal("local["
+								a.addChild(createTerminal("mem[base+"
 										+ idBaseIndex + "]"));
 								a.addChild(createSemiColonNode());
 								/* assign exp1 to array element*/
 								if(id.local == true)
-								a.addChild(createTerminal("local[local["
-										+ arrayIndex + "]] = local["
+								a.addChild(createTerminal("mem[base + mem[base+"
+										+ arrayIndex + "]] = mem[base"
 										+ exp1Node.index + "]"));
 								else
 									a.addChild(createTerminal("global[local["
@@ -918,11 +931,11 @@ public class RecursiveParsing {
 						Vector<Integer> paramList = exprNode.getIndexList();
 						for(int i=0; i<paramList.size() - 1 ; i++)
 						{
-							f.addChild(createTerminal("local["+paramList.elementAt(i)+"],"));
+							f.addChild(createTerminal("mem[base+"+paramList.elementAt(i)+"],"));
 						}
 						if(paramList.size() > 0)
 						{
-							f.addChild(createTerminal("local["+paramList.elementAt(paramList.size() - 1)+"]"));
+							f.addChild(createTerminal("mem[base+"+paramList.elementAt(paramList.size() - 1)+"]"));
 						}
 						f.addChild(createTerminal(")"));
 						f.addChild(createSemiColonNode());
@@ -1028,7 +1041,7 @@ public class RecursiveParsing {
 						currentToken = currentPair.getKey();
 						i.addChild(ifNode);
 						i.addChild(lp);
-						i.addChild(createTerminal("local["+condExp.index+"]"));
+						i.addChild(createTerminal("mem[base+"+condExp.index+"]"));
 						i.addChild(createTerminal(currentPair.getValue()));
 						int iflabel = labelIndex;
 						labelIndex++;
@@ -1083,10 +1096,10 @@ public class RecursiveParsing {
 				c.addChild(condNode);
 				int index = vHMap.getNumVariables(currFunction);
 				vHMap.incrementNumVariables(currFunction, 1);
-				c.addChild(createTerminal("local[" + index + "] ="));
-				c.addChild(createTerminal("local[" + prev.index + "]"));
+				c.addChild(createTerminal("mem[base+" + index + "] ="));
+				c.addChild(createTerminal("mem[base+" + prev.index + "]"));
 				c.addChild(condOpNode);
-				c.addChild(createTerminal("local[" + condNode.index + "]"));
+				c.addChild(createTerminal("mem[base+" + condNode.index + "]"));
 				c.addChild(createSemiColonNode());
 				c.index = index;
 				return c;
@@ -1131,10 +1144,10 @@ public class RecursiveParsing {
 				if (c.addChild(exp2)){
 					int index = vHMap.getNumVariables(currFunction);
 					vHMap.incrementNumVariables(currFunction, 1);
-					c.addChild(createTerminal("local[" + index + "] ="));
-					c.addChild(createTerminal("local[" + exp.index + "]"));
+					c.addChild(createTerminal("mem[base+" + index + "] ="));
+					c.addChild(createTerminal("mem[base+" + exp.index + "]"));
 					c.addChild(compOp);
-					c.addChild(createTerminal("local[" + exp2.index + "]"));
+					c.addChild(createTerminal("mem[base+" + exp2.index + "]"));
 					c.addChild(createSemiColonNode());
 					c.index = index;
 					return c;
@@ -1199,7 +1212,7 @@ public class RecursiveParsing {
 					if (inputTokens.firstElement().getKey() == TokenNames.right_parenthesis) {
 						currentPair = inputTokens.remove(0);
 						currentToken = currentPair.getKey();
-						w.addChild(createTerminal("if(local["+condExp.index+"])"));
+						w.addChild(createTerminal("if(mem[base+"+condExp.index+"])"));
 						int whileBlockLabel = labelIndex;
 						labelIndex++;
 						w.addChild(createTerminal("goto c"+whileBlockLabel+";\n"));
@@ -1250,7 +1263,7 @@ public class RecursiveParsing {
 		if (exp != null) {
 			r.addChild(exp);
 			r.addChild(createTerminal("return"));
-			r.addChild(createTerminal("local [" + exp.index + "]"));
+			r.addChild(createTerminal("mem[base+" + exp.index + "]"));
 			if (inputTokens.firstElement().getKey() == TokenNames.semicolon) {
 				currentToken = inputTokens.remove(0).getKey();
 				r.addChild(createSemiColonNode());
@@ -1346,10 +1359,10 @@ public class RecursiveParsing {
 				paramNode.addChild(tNode);
 				int index = vHMap.getNumVariables(currFunction);
 				vHMap.incrementNumVariables(currFunction, 1);
-				paramNode.addChild(createTerminal("local[" + index + "] ="));
-				paramNode.addChild(createTerminal("local[" + prev.index + "]"));
+				paramNode.addChild(createTerminal("mem[base+" + index + "] ="));
+				paramNode.addChild(createTerminal("mem[base+" + prev.index + "]"));
 				paramNode.addChild(opNode);
-				paramNode.addChild(createTerminal("local[" + tNode.index
+				paramNode.addChild(createTerminal("mem[base+" + tNode.index
 						+ "];\n"));
 				paramNode.index = index;
 				Node expprime = expression_prime(paramNode);
@@ -1417,10 +1430,10 @@ public class RecursiveParsing {
 				paramNode.addChild(facNode);
 				int index = vHMap.getNumVariables(currFunction);
 				vHMap.incrementNumVariables(currFunction, 1);
-				paramNode.addChild(createTerminal("local[" + index + "] ="));
-				paramNode.addChild(createTerminal("local[" + prev.index + "]"));
+				paramNode.addChild(createTerminal("mem[base+" + index + "] ="));
+				paramNode.addChild(createTerminal("mem[base+" + prev.index + "]"));
 				paramNode.addChild(opNode);
-				paramNode.addChild(createTerminal("local[" + facNode.index
+				paramNode.addChild(createTerminal("mem[base+" + facNode.index
 						+ "];\n"));
 				paramNode.index = index;
 				Node tprime = term_prime(paramNode);
@@ -1479,7 +1492,7 @@ public class RecursiveParsing {
 			currentToken = currentPair.getKey();
 			int index = vHMap.getNumVariables(currFunction);
 			vHMap.incrementNumVariables(currFunction, 1);
-			f.addChild(createTerminal("local[" + index + "] ="));
+			f.addChild(createTerminal("mem[base+" + index + "] ="));
 			f.addChild(createTerminal(currentPair.getValue()));
 			f.addChild(createSemiColonNode());
 			f.index = index;
@@ -1492,7 +1505,7 @@ public class RecursiveParsing {
 			currentToken = currentPair.getKey();
 			int index = vHMap.getNumVariables(currFunction);
 			vHMap.incrementNumVariables(currFunction, 1);
-			f.addChild(createTerminal("local[" + index + "] ="));
+			f.addChild(createTerminal("mem[base+" + index + "] ="));
 			f.addChild(createTerminal(currentPair.getValue()));
 			if (inputTokens.firstElement().getKey() == TokenNames.NUMBER) {
 				currentPair = inputTokens.remove(0);
@@ -1515,9 +1528,9 @@ public class RecursiveParsing {
 				f.addChild(exp);
 				int index = vHMap.getNumVariables(currFunction);
 				vHMap.incrementNumVariables(currFunction, 1);
-				f.addChild(createTerminal("local[" + index + "] ="));
+				f.addChild(createTerminal("mem[base+" + index + "] ="));
 				f.addChild(lp);
-				f.addChild(createTerminal("local[" + exp.index + "]"));
+				f.addChild(createTerminal("mem[base+" + exp.index + "]"));
 				if (inputTokens.firstElement().getKey() == TokenNames.right_parenthesis) {
 					currentPair = inputTokens.remove(0);
 					currentToken = currentPair.getKey();
@@ -1551,7 +1564,7 @@ public class RecursiveParsing {
 				/* get the base index of array*/
 				int idBaseIndex = vHMap.getNumVariables(currFunction);
 				vHMap.incrementNumVariables(currFunction, 1);
-				f.addChild(createTerminal("local[" + idBaseIndex + "] ="));
+				f.addChild(createTerminal("mem[base+" + idBaseIndex + "] ="));
 				Node id = createIdNode(value);
 				int id_base = id.index;
 				f.addChild(createTerminal(Integer.toString(id_base)));
@@ -1559,9 +1572,9 @@ public class RecursiveParsing {
 				/* get array element index */
 				int arrayIndex = vHMap.getNumVariables(currFunction);
 				vHMap.incrementNumVariables(currFunction, 1);
-				f.addChild(createTerminal("local[" + arrayIndex + "] ="));
-				f.addChild(createTerminal("local[" + exp.index + "] +"));
-				f.addChild(createTerminal("local[" + idBaseIndex + "]"));
+				f.addChild(createTerminal("mem[base+" + arrayIndex + "] ="));
+				f.addChild(createTerminal("mem[base+" + exp.index + "] +"));
+				f.addChild(createTerminal("mem[base+" + idBaseIndex + "]"));
 				f.addChild(createSemiColonNode());
 				if (inputTokens.firstElement().getKey() == TokenNames.right_bracket) {
 					currentPair = inputTokens.remove(0);
@@ -1569,9 +1582,9 @@ public class RecursiveParsing {
 					/* get element*/
 					int elementIndex = vHMap.getNumVariables(currFunction);
 					vHMap.incrementNumVariables(currFunction, 1);
-					f.addChild(createTerminal("local[" + elementIndex + "] ="));
+					f.addChild(createTerminal("mem[base+" + elementIndex + "] ="));
 					if(id.local)
-					f.addChild(createTerminal("local[local[" + arrayIndex
+					f.addChild(createTerminal("mem[base+mem[base+" + arrayIndex
 							+ "]]"));
 					else f.addChild(createTerminal("global[local[" + arrayIndex
 							+ "]]"));
@@ -1595,18 +1608,18 @@ public class RecursiveParsing {
 					currentToken = currentPair.getKey();
 					int index = vHMap.getNumVariables(currFunction);
 					vHMap.incrementNumVariables(currFunction, 1);
-					f.addChild(createTerminal("local[" + index + "] ="));
+					f.addChild(createTerminal("mem[base+" + index + "] ="));
 					f.addChild(createTerminal(value));
 					f.addChild(createTerminal("("));
 					//pass parameters to function */
 					Vector<Integer> paramList = exprNode.getIndexList();
 					for(int i=0; i<paramList.size() - 1 ; i++)
 					{
-						f.addChild(createTerminal("local["+paramList.elementAt(i)+"],"));
+						f.addChild(createTerminal("mem[base+"+paramList.elementAt(i)+"],"));
 					}
 					if(paramList.size() > 0)
 					{
-						f.addChild(createTerminal("local["+paramList.elementAt(paramList.size() - 1)+"]"));
+						f.addChild(createTerminal("mem[base+"+paramList.elementAt(paramList.size() - 1)+"]"));
 					}
 					f.addChild(createTerminal(")"));
 					f.addChild(createSemiColonNode());
@@ -1619,7 +1632,7 @@ public class RecursiveParsing {
 		// empty
 		int index = vHMap.getNumVariables(currFunction);
 		vHMap.incrementNumVariables(currFunction, 1);
-		f.addChild(createTerminal("local[" + index + "] ="));
+		f.addChild(createTerminal("mem[base+" + index + "] ="));
 		Node id = createIdNode(value);
 		f.addChild(id);
 		f.addChild(createSemiColonNode());

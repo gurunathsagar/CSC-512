@@ -26,10 +26,12 @@ public class MainCodeGenerator {
 			System.exit(0);
 		}
 		Vector<Pair<TokenNames,String>> scannedTokens = new Vector<Pair<TokenNames,String>>();
+		Vector<Pair<TokenNames,String>> scannedTokens1 = new Vector<Pair<TokenNames,String>>();
 		Map<String, Integer> varCount;
 		// run initialize and run the scanner
 		Scanner scanner = new Scanner(args[0]);
 		scannedTokens = scanner.runScanner();
+		scannedTokens1 = scanner.runScanner();
 		
 		// initialize and run the parser and get the Variable Count in varCount
 		InitialRecursiveParsing IRP = new InitialRecursiveParsing(scannedTokens);
@@ -38,7 +40,7 @@ public class MainCodeGenerator {
 		//System.out.println(varCount);
 		
 		
-		RecursiveParsing RP = new RecursiveParsing(scannedTokens, varCount);
+		RecursiveParsing RP = new RecursiveParsing(scannedTokens1, varCount);
 		String fileName = "out.c";
 		PrintWriter pw = new PrintWriter(new File(fileName));
 		scanner.printMetaStatements(pw);
