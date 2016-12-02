@@ -1,5 +1,5 @@
 import java.io.PrintWriter;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * 
@@ -144,6 +144,51 @@ public class Node {
 			{
 				//print children
 				children.elementAt(i).print(pw, vHMap);
+			}
+		}
+	}
+	
+	public void updateVariableCount(Map<String, Integer> varCount, VariableHashmap vHMap){
+		if(leaf == true)
+		{
+			
+		}
+		//data declaration node
+		else if(datadecl == true)
+		{
+			//get total number of variables for function
+			int num = vHMap.getNumVariables(value);
+			if(num > 0){
+				if(value.equals("global"))
+				{
+					//int global[num];
+					//pw.print("int global["+num+"];\n");
+					varCount.put("global", num);
+					//System.out.println("global" + num);
+				}
+				else
+				{
+					//int local[num];
+					//pw.print("int local["+num+"];\n");
+					varCount.put(value, num);
+					//System.out.println(value + num);
+					Vector<String> paramsList = vHMap.getParameterList(value);
+					for(int i= 0; i<paramsList.size(); i++)
+					{
+						// For all the input parameters to the function
+						int index = vHMap.get(value, paramsList.elementAt(i));
+						//pw.print("local[" + index +"] = " + paramsList.elementAt(i)+";\n");
+					}
+				}
+			}
+		}
+		else
+		{
+			//non-leaf node
+			for(int i=0; i< children.size(); i++)
+			{
+				//print children
+				children.elementAt(i).updateVariableCount(varCount, vHMap);
 			}
 		}
 	}

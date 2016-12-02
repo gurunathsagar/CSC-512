@@ -10,7 +10,7 @@ import java.util.*;
  * @author Danny Reinheimer
  *
  */
-public class RecursiveParsing {
+public class InitialRecursiveParsing {
 
 	private static int numVariables; // Keeps track of the number of variables
 	private static int numFunctions; // Keeps track of the number of functions
@@ -29,21 +29,10 @@ public class RecursiveParsing {
 	private int labelIndex;
 	private int whileIfLabel;
 	private int whileRestLabel; 
-	public Map<String, Integer> varCount;
+	public Map<String, Integer> varCount = new HashMap<String, Integer>();
 	
-	
-	/*
-		Helper function to print debug output.
-	*/
-	public say(String str){
-		System.out.print(str);
-	}
-	
-	/*
-		Helper function to print debug output.
-	*/
-	public sayLine(String str){
-		System.out.println(str);
+	public Map<String, Integer> getVarCount(){
+		return varCount;
 	}
 
 	/**
@@ -51,7 +40,7 @@ public class RecursiveParsing {
 	 * 
 	 * @param inputTokens1
 	 */
-	public RecursiveParsing(Vector<Pair<TokenNames, String>> inputTokens1, Map<String, Integer> varCount) {
+	public InitialRecursiveParsing(Vector<Pair<TokenNames, String>> inputTokens1) {
 		numFunctions = 0;
 		numVariables = 0;
 		numStatements = 0;
@@ -64,23 +53,22 @@ public class RecursiveParsing {
 		labelIndex = 0;	//counter for labels
 		whileIfLabel = -1; //current if label for a while statement
 		whileRestLabel = -1; //current rest label for a while statement
-		this.varCount = varCount;
 	}
 
 	/**
 	 * initialized the parsing, converts the code into a tree and prints out the results when finished
 	 */
-	public void parse(PrintWriter pw) {
-		
+	public void parse() {
 		Node progNode = new Node();
 		//Node to declare global int array
 		progNode.addChild(createDataDeclNode("global"));
 		//Program node
 		progNode.addChild(program());
 		if (inputTokens.firstElement().getKey() == TokenNames.eof) {
-			System.out.println("Pass variable " + numVariables + " function " + numFunctions + " statement " + numStatements);
+			//System.out.println("Pass variable " + numVariables + " function " + numFunctions + " statement " + numStatements);
 			//Print the constructed tree
-			progNode.print(pw, vHMap);
+			//progNode.print(pw, vHMap);
+			progNode.updateVariableCount(varCount, vHMap);
 		} else {
 			System.out.println("error");
 		}
