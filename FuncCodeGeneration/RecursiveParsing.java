@@ -31,6 +31,8 @@ public class RecursiveParsing {
 	private int whileRestLabel; 
 	public Map<String, Integer> varCount;
 	private Map<String, Integer> parameterMap = new HashMap<String, Integer>();
+	private boolean newFuncStart;
+	private int labelCount;
 	
 	
 	/*
@@ -65,7 +67,8 @@ public class RecursiveParsing {
 		labelIndex = 0;	//counter for labels
 		whileIfLabel = -1; //current if label for a while statement
 		whileRestLabel = -1; //current rest label for a while statement
-		this.varCount = varCount;
+		this.varCount = varCount; // Variable count of each function
+		labelCount = 1; // USeful for assigning labels
 	}
 
 	/**
@@ -228,6 +231,7 @@ public class RecursiveParsing {
 			if (data_decls_Z() != null) {
 				//local array declaration
 				createDataDeclNode(currFunction);
+				newFuncStart = true;
 				if (f.addChild(statements())) {
 					if (inputTokens.firstElement().getKey() == TokenNames.right_brace) {
 						currentPair = inputTokens.remove(0);
@@ -393,6 +397,8 @@ public class RecursiveParsing {
 				//n.addChild(createTerminal(currentPair.getValue()));
 				//adding the parameter to hashmap
 				AddParameterToHashMap(currFunction, currentPair.getValue());
+				int index = parameterMap.size();
+				parameterMap.put(currentPair.getValue(),index);
 				if (n.addChild(non_empty_list_prime()))
 					return n;
 				else
@@ -662,6 +668,10 @@ public class RecursiveParsing {
 	 */
 	private Node statements() {
 		Node s = new Node();
+		if(newFuncStart){
+			s.addChild(createTerminal(currFunction + "Func: ;"));
+			newFuncStart = false;
+		}
 		if (s.addChild(statement())) {
 			numStatements += 1;
 			if (s.addChild(statements()))
@@ -926,19 +936,37 @@ public class RecursiveParsing {
 						vHMap.incrementNumVariables(currFunction, 1);
 						f.addChild(createTerminal("local[" + index + "] ="));*/
 						/*call function using expression list as parameter*/
-						f.addChild(createTerminal(value));
-						f.addChild(createTerminal("("));
+						//f.addChild(createTerminal(value));	//Not required as no func call is done this way.
+						//f.addChild(createTerminal("("));
+						Node pr = new Node(); // Prologue
+						int i=0;
+						
 						Vector<Integer> paramList = exprNode.getIndexList();
-						for(int i=0; i<paramList.size() - 1 ; i++)
+						for(; i<paramList.size() - 1 ; i++)
 						{
-							f.addChild(createTerminal("mem[base+"+paramList.elementAt(i)+"],"));
+							//f.addChild(createTerminal("mem[base+"+paramList.elementAt(i)+"],"));
+							pr.addChild(createTerminal("mem[top+"+i+"] = mem[base+"+paramList.elementAt(i) + "];"));
 						}
 						if(paramList.size() > 0)
 						{
-							f.addChild(createTerminal("mem[base+"+paramList.elementAt(paramList.size() - 1)+"]"));
+							//f.addChild(createTerminal("mem[base+"+paramList.elementAt(paramList.size() - 1)+"]"));
+							pr.addChild(createTerminal("mem[top+"+i+"] = mem[base+"	// Pushing params to Stack
+								+paramList.elementAt(paramList.size() - 1) + "];"));
+							i++;
 						}
-						f.addChild(createTerminal(")"));
-						f.addChild(createSemiColonNode());
+						pr.addChild(createTerminal("mem[top+"+i+"] = base;")); i++;	// Storing the base
+						pr.addChild(createTerminal("mem[top+"+i+"] = top;")); i++; i++;	// Storing the top. Skip one for return value
+						pr.addChild(createTerminal("base = "+ labelCount +";")); i++; // Storing label
+						pr.addChild(createTerminal("base = top+"+i+";")); i++;
+						
+						int localCount = varCount.get(value);	// Number of variables in the function being called.
+						
+						pr.addChild(createTerminal("top = base+" + localCount +";"));
+						pr.addChild(createTerminal("goto " + value + "Func;"));
+						pr.addChild(createTerminal("label_" + labelCount + ": ;")); labelCount++;
+						f.addChild(pr);
+						//f.addChild(createTerminal(")"));
+						//f.addChild(createSemiColonNode());
 						return f;
 					}
 				}
@@ -1608,21 +1636,43 @@ public class RecursiveParsing {
 					currentToken = currentPair.getKey();
 					int index = vHMap.getNumVariables(currFunction);
 					vHMap.incrementNumVariables(currFunction, 1);
-					f.addChild(createTerminal("mem[base+" + index + "] ="));
-					f.addChild(createTerminal(value));
-					f.addChild(createTerminal("("));
-					//pass parameters to function */
+					Node lvalue = new Node();
+					lvalue.addChild(createTerminal("mem[base+" + index + "] = " + "mem[top + 3];")); // This value is required on left side for catchaing return value
+					//f.addChild(createTerminal("mem[base+" + index + "] ="));
+					//f.addChild(createTerminal(value));
+					//f.addChild(createTerminal("("));
+					
+					Node pr = new Node(); // Prologue
+					int i=0;
+					
 					Vector<Integer> paramList = exprNode.getIndexList();
-					for(int i=0; i<paramList.size() - 1 ; i++)
+					for(; i<paramList.size() - 1 ; i++)
 					{
-						f.addChild(createTerminal("mem[base+"+paramList.elementAt(i)+"],"));
+						//f.addChild(createTerminal("mem[base+"+paramList.elementAt(i)+"],"));
+						pr.addChild(createTerminal("mem[top+"+i+"] = mem[base+"+paramList.elementAt(i) + "];"));
 					}
 					if(paramList.size() > 0)
 					{
-						f.addChild(createTerminal("mem[base+"+paramList.elementAt(paramList.size() - 1)+"]"));
+						//f.addChild(createTerminal("mem[base+"+paramList.elementAt(paramList.size() - 1)+"]"));
+						pr.addChild(createTerminal("mem[top+"+i+"] = mem[base+"	// Pushing params to Stack
+							+paramList.elementAt(paramList.size() - 1) + "];"));
+						i++;
 					}
-					f.addChild(createTerminal(")"));
-					f.addChild(createSemiColonNode());
+					pr.addChild(createTerminal("mem[top+"+i+"] = base;")); i++;	// Storing the base
+					pr.addChild(createTerminal("mem[top+"+i+"] = top;")); i++; i++;	// Storing the top. Skip one for return value
+					pr.addChild(createTerminal("base = "+ labelCount +";")); i++; // Storing label
+					pr.addChild(createTerminal("base = top+"+i+";")); i++;
+					
+					int localCount = varCount.get(value);	// Number of variables in the function being called.
+					
+					pr.addChild(createTerminal("top = base+" + localCount +";"));
+					pr.addChild(createTerminal("goto " + value + "Func;"));
+					pr.addChild(createTerminal("label_" + labelCount + ": ;")); labelCount++;
+					pr.addChild(lvalue);
+					f.addChild(pr);
+					
+					//f.addChild(createTerminal(")"));
+					//f.addChild(createSemiColonNode());
 					f.index = index;
 					return f;
 				}
