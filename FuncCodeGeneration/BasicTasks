@@ -1,0 +1,28 @@
+Prologue for main:
+
+top = membase
+mem[top] = 0
+base = top + 1
+top = base + 1 + no. of params
+
+for every function call:
+
+- push all the parameters. mem[top + 0] = mem[base + 0.1.2...]
+- push base
+- push top
+- copy label
+- update base to new base
+- update top to new top
+
+Epilog of main:
+
+- jumpReg = mem[base - 1]
+- goto jumpTable
+
+Epilogue of each func:
+
+top = mem[base - 3]
+copy return value
+jumpReg = mem[base-1]
+base = mem[base-4]
+goto jumpTable
