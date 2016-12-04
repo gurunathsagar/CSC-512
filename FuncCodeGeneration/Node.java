@@ -122,17 +122,17 @@ public class Node {
 				if(value.equals("global"))
 				{
 					//int global[num];
-					pw.print("int global["+num+"];\n");
+					//pw.print("int global["+num+"];\n");
 				}
 				else
 				{
 					//int local[num];
-					pw.print("int local["+num+"];\n");
+					//pw.print("int local["+num+"];\n");
 					Vector<String> paramsList = vHMap.getParameterList(value);
 					for(int i= 0; i<paramsList.size(); i++)
 					{
 						int index = vHMap.get(value, paramsList.elementAt(i));
-						pw.print("local[" + index +"] = " + paramsList.elementAt(i)+";\n");
+						//pw.print("local[" + index +"] = " + paramsList.elementAt(i)+";\n");
 					}
 				}
 			}

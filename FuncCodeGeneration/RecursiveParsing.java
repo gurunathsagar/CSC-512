@@ -33,6 +33,8 @@ public class RecursiveParsing {
 	private Map<String, Integer> parameterMap = new HashMap<String, Integer>();
 	private boolean newFuncStart;
 	private int labelCount;
+	private boolean returnExecuted;
+	public boolean mainStarted;
 	
 	
 	/*
@@ -69,12 +71,39 @@ public class RecursiveParsing {
 		whileRestLabel = -1; //current rest label for a while statement
 		this.varCount = varCount; // Variable count of each function
 		labelCount = 1; // USeful for assigning labels
+		returnExecuted = false;
+		mainStarted = false;
 	}
 
+	public void instantiateMain(List<String> main){
+		
+		int count = 0;
+		
+		main.add("int const N=2000;\n\n");
+		main.add("#include <assert.h>\n");
+		main.add("#define top mem["+Integer.toString(count)+"]"); 
+		main.add("#define base mem["+Integer.toString(count + 1)+"]"); 
+		main.add("#define jumpReg mem["+Integer.toString(count + 2)+"]");
+		main.add("#define membase "+Integer.toString(count + 3));
+		main.add("int mem[2000];");
+		main.add("\n\nint main() { \n\ntop = membase; \n mem[top] = 0; \n base = top + 1; \ntop = base + 2;\n");
+		
+	}
+	
+	public void instantiateLast(List<String> last){
+		
+		last.add("\n\njumpTable:\nswitch(jumpReg){\ncase 0: exit(0);\n");
+		for(int i=1;i<labelCount;i++){
+			last.add("case "+i+": goto label_"+i+";");
+		}
+		
+		last.add("default: assert(0);\n}\n}");
+	}
+	
 	/**
 	 * initialized the parsing, converts the code into a tree and prints out the results when finished
 	 */
-	public void parse(PrintWriter pw) {
+	public void parse(PrintWriter pw, List<String> main, List<String> last) {
 		
 		Node progNode = new Node();
 		//Node to declare global int array
@@ -85,6 +114,10 @@ public class RecursiveParsing {
 			System.out.println("Pass variable " + numVariables + " function " + numFunctions + " statement " + numStatements);
 			//Print the constructed tree
 			progNode.print(pw, vHMap);
+			instantiateMain(main);
+			instantiateLast(last);
+			//progNode.finalPrint(main, code);
+			//printToFile(pw, main, code, last);
 		} else {
 			System.out.println("error");
 		}
@@ -160,6 +193,7 @@ public class RecursiveParsing {
 			idNode.local = false;//id corresponds to global array
 			idNode.index = index;
 			idNode.setTerminalValue("global[" + index + "]");
+			idNode.setTerminalValue("mem[base+" + index + "]");
 			return idNode;
 		}
 
@@ -232,12 +266,51 @@ public class RecursiveParsing {
 				//local array declaration
 				createDataDeclNode(currFunction);
 				newFuncStart = true;
+				
+				if(currFunction.equals("main"))
+					f.addChild(createTerminal("\n" + currFunction + "Func: ;\n"));
+				
+				else
+					f.addChild(createTerminal(currFunction + "Func: ;"));
+				
+				
+				int fixVarCount = 0;
+				if(varCount.containsKey(currFunction)){
+					fixVarCount = varCount.get(currFunction);
+				}
+				String[] list = new String[parameterMap.size()];
+				for(String s:parameterMap.keySet()){
+					int ind = parameterMap.size()-parameterMap.get(s);
+					list[parameterMap.get(s)] = "mem[base+"+parameterMap.get(s)+"] = " + "mem[base-4-"+ind+"];";
+				}
+
+				for(String obj:list){
+					f.addChild(createTerminal(obj));
+				}
+				
 				if (f.addChild(statements())) {
 					if (inputTokens.firstElement().getKey() == TokenNames.right_brace) {
 						currentPair = inputTokens.remove(0);
 						currentToken = currentPair.getKey();
 						//f.addChild(createTerminal(currentPair.getValue()+"\n"));
 						// Count the number of function definitions
+						
+						Node el = new Node();	// Epilog
+						
+						if(!currFunction.equals("main")){
+							el.addChild(createTerminal("top = mem[base-3];"));
+							el.addChild(createTerminal("jumpReg = mem[base-1];"));
+							el.addChild(createTerminal("base = mem[base-4];"));
+							el.addChild(createTerminal("goto jumpTable;"));
+						}
+						else{
+							el.addChild(createTerminal("jumpReg = mem[base-1];"));
+							el.addChild(createTerminal("goto jumpTable;\n\n"));
+						}
+						if(!returnExecuted){
+							f.addChild(el);
+						}
+						returnExecuted = false;
 						parameterMap.clear();
 						numFunctions += 1;
 						currFunction = "global";
@@ -668,10 +741,7 @@ public class RecursiveParsing {
 	 */
 	private Node statements() {
 		Node s = new Node();
-		if(newFuncStart){
-			s.addChild(createTerminal(currFunction + "Func: ;"));
-			newFuncStart = false;
-		}
+
 		if (s.addChild(statement())) {
 			numStatements += 1;
 			if (s.addChild(statements()))
@@ -898,8 +968,8 @@ public class RecursiveParsing {
 										+ arrayIndex + "]] = mem[base"
 										+ exp1Node.index + "]"));
 								else
-									a.addChild(createTerminal("global[local["
-											+ arrayIndex + "]] = local["
+									a.addChild(createTerminal("mem[base+mem[base"
+											+ arrayIndex + "]] = mem[base"
 											+ exp1Node.index + "]"));	
 								a.addChild(createSemiColonNode());
 								return a;
@@ -956,7 +1026,7 @@ public class RecursiveParsing {
 						}
 						pr.addChild(createTerminal("mem[top+"+i+"] = base;")); i++;	// Storing the base
 						pr.addChild(createTerminal("mem[top+"+i+"] = top;")); i++; i++;	// Storing the top. Skip one for return value
-						pr.addChild(createTerminal("base = "+ labelCount +";")); i++; // Storing label
+						pr.addChild(createTerminal("mem[top+"+i+"] = "+ labelCount +";")); i++; // Storing label
 						pr.addChild(createTerminal("base = top+"+i+";")); i++;
 						
 						int localCount = varCount.get(value);	// Number of variables in the function being called.
@@ -1290,19 +1360,39 @@ public class RecursiveParsing {
 		Node exp = expression();
 		if (exp != null) {
 			r.addChild(exp);
-			r.addChild(createTerminal("return"));
-			r.addChild(createTerminal("mem[base+" + exp.index + "]"));
+			//r.addChild(createTerminal("return"));
+			//r.addChild(createTerminal("mem[base+" + exp.index + "]"));
 			if (inputTokens.firstElement().getKey() == TokenNames.semicolon) {
 				currentToken = inputTokens.remove(0).getKey();
-				r.addChild(createSemiColonNode());
+				//r.addChild(createSemiColonNode());
+				returnExecuted = true;
+				Node el = new Node();	// Epilog
+				
+				el.addChild(createTerminal("top = mem[base-3];"));	// Restoring the old top
+				el.addChild(createTerminal("mem[base-2] = mem[base+"+exp.index+"];"));	// Copying the return value
+				el.addChild(createTerminal("jumpReg = mem[base-1];"));	// Updating the jumpReg
+				el.addChild(createTerminal("base = mem[base-4];"));	// Restoring the old base
+				el.addChild(createTerminal("goto jumpTable;"));	// The actual jump call
+				
+				r.addChild(el);
+				
 				return r;
 			}
 			return null;
 		}
 		if (inputTokens.firstElement().getKey() == TokenNames.semicolon) {
 			currentToken = inputTokens.remove(0).getKey();
-			r.addChild(createTerminal("return"));
-			r.addChild(createSemiColonNode());
+			//r.addChild(createTerminal("return"));
+			//r.addChild(createSemiColonNode());
+			returnExecuted = true;
+			Node el = new Node();	// Epilog
+			
+			el.addChild(createTerminal("top = mem[base-3];"));
+			el.addChild(createTerminal("jumpReg = mem[base-1];"));
+			el.addChild(createTerminal("base = mem[base-4];"));
+			el.addChild(createTerminal("goto jumpTable;"));
+			
+			r.addChild(el);
 			return r;
 		}
 		return null;
@@ -1614,7 +1704,7 @@ public class RecursiveParsing {
 					if(id.local)
 					f.addChild(createTerminal("mem[base+mem[base+" + arrayIndex
 							+ "]]"));
-					else f.addChild(createTerminal("global[local[" + arrayIndex
+					else f.addChild(createTerminal("mem[base+mem[base" + arrayIndex
 							+ "]]"));
 					f.addChild(createSemiColonNode());
 					f.index = elementIndex;
@@ -1636,8 +1726,7 @@ public class RecursiveParsing {
 					currentToken = currentPair.getKey();
 					int index = vHMap.getNumVariables(currFunction);
 					vHMap.incrementNumVariables(currFunction, 1);
-					Node lvalue = new Node();
-					lvalue.addChild(createTerminal("mem[base+" + index + "] = " + "mem[top + 3];")); // This value is required on left side for catchaing return value
+					
 					//f.addChild(createTerminal("mem[base+" + index + "] ="));
 					//f.addChild(createTerminal(value));
 					//f.addChild(createTerminal("("));
@@ -1646,6 +1735,11 @@ public class RecursiveParsing {
 					int i=0;
 					
 					Vector<Integer> paramList = exprNode.getIndexList();
+					
+					Node lvalue = new Node();
+					System.out.println(paramList);
+					lvalue.addChild(createTerminal("mem[base+" + index + "] = " + "mem[top + "+Integer.toString(2+paramList.size())+"];")); // This value is required on left side for catchaing return value
+					
 					for(; i<paramList.size() - 1 ; i++)
 					{
 						//f.addChild(createTerminal("mem[base+"+paramList.elementAt(i)+"],"));
@@ -1660,7 +1754,7 @@ public class RecursiveParsing {
 					}
 					pr.addChild(createTerminal("mem[top+"+i+"] = base;")); i++;	// Storing the base
 					pr.addChild(createTerminal("mem[top+"+i+"] = top;")); i++; i++;	// Storing the top. Skip one for return value
-					pr.addChild(createTerminal("base = "+ labelCount +";")); i++; // Storing label
+					pr.addChild(createTerminal("mem[top+"+i+"] = "+ labelCount +";")); i++; // Storing label
 					pr.addChild(createTerminal("base = top+"+i+";")); i++;
 					
 					int localCount = varCount.get(value);	// Number of variables in the function being called.
