@@ -1,7 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * This is the main class for the Scanner
@@ -61,4 +61,14 @@ public class Scanner {
 //			System.out.println(MetaStatements.elementAt(i));
 		}
 	}
+	
+	public void addMetaStatements(List<String> main)
+	{
+		for(int i=0; i<MetaStatements.size(); i++)
+		{
+			main.add(MetaStatements.elementAt(i));
+//			System.out.println(MetaStatements.elementAt(i));
+		}
+	}
+	
 }

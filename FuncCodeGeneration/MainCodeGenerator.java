@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -28,6 +26,10 @@ public class MainCodeGenerator {
 		Vector<Pair<TokenNames,String>> scannedTokens = new Vector<Pair<TokenNames,String>>();
 		Vector<Pair<TokenNames,String>> scannedTokens1 = new Vector<Pair<TokenNames,String>>();
 		Map<String, Integer> varCount;
+		List<String> main = new ArrayList<String>();
+		List<String> code = new ArrayList<String>();
+		List<String> last = new ArrayList<String>();
+		boolean mainStarted = false;
 		// run initialize and run the scanner
 		Scanner scanner = new Scanner(args[0]);
 		scannedTokens = scanner.runScanner();
@@ -41,11 +43,50 @@ public class MainCodeGenerator {
 		
 		
 		RecursiveParsing RP = new RecursiveParsing(scannedTokens1, varCount);
-		String fileName = "out.c";
+		String fileName = "temp.c";
 		PrintWriter pw = new PrintWriter(new File(fileName));
-		scanner.printMetaStatements(pw);
-		RP.parse(pw);
+		//scanner.printMetaStatements(pw);
+		
+		scanner.addMetaStatements(main);
+		
+		RP.parse(pw, main, last);
+		
 		pw.close();
+		FileInputStream fstream = null;
+		BufferedReader br = null;
+		
+		
+		try {
+			File file = new File("temp.c");
+			FileReader fileReader = new FileReader(file);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			String line;
+			while ((line = bufferedReader.readLine()) != null) {
+					
+				  // Print the content on the console
+			  if(line.contains("mainFunc"))
+				mainStarted=true;
+					
+				if(mainStarted)
+					main.add(line);
+				else
+					code.add(line);
+					
+				}
+				fileReader.close();
+			} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		PrintWriter pw3 = new PrintWriter(new File("out.c"));
+		
+		for(String s: main)
+			pw3.print(s + "\n");
+		for(String s: code)
+			pw3.print(s + "\n");
+		for(String s: last)
+			pw3.print(s + "\n");
+		pw3.close();
 	}
 	
 	

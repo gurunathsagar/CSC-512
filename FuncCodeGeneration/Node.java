@@ -148,6 +148,47 @@ public class Node {
 		}
 	}
 	
+	/**
+	 * Prints the node to file
+	 * @param pw -> printWriter to write to file
+	 * @param vHMap -> Hashmap containing ids
+	 */
+	/*public void finalPrint(List<String> main, List<String> code)
+	{
+		//leaf node
+		if(leaf == true)
+		{
+			
+			if(value.contains("StartOfMain###"))
+				mainStarted = true;
+			//print value
+			
+			if(mainStarted){
+				if(value.contains("StartOfMain###"))
+					main.add("mainFunc: ;" + "\n");
+				else if(value.contains("EndOFMain@@@"))
+					main.add("\n" + "goto jumpTable");
+				else
+					main.add(value);
+			}
+			else
+				code.add(value);
+			
+			if(value.contains("EndOFMain@@@"))
+				mainStarted = false;
+			
+		}
+		else
+		{
+			//non-leaf node
+			for(int i=0; i< children.size(); i++)
+			{
+				//print children
+				children.elementAt(i).finalPrint(main, code);
+			}
+		}
+	}*/
+	
 	public void updateVariableCount(Map<String, Integer> varCount, VariableHashmap vHMap){
 		if(leaf == true)
 		{
